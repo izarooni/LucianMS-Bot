@@ -5,7 +5,7 @@ import com.lucianms.BaseCommand;
 import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 /**
  * @author izarooni

@@ -6,7 +6,7 @@ import com.lucianms.commands.Command;
 import com.lucianms.utils.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.sql.Connection;

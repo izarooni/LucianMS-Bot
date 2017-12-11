@@ -2,7 +2,7 @@ package com.lucianms.commands;
 
 import com.lucianms.utils.Disposable;
 import com.lucianms.Discord;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 import java.util.Collection;
 import java.util.Collections;

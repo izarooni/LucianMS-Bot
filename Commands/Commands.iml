@@ -7,7 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Discord4j-2.8.3-shaded" level="project" />
     <orderEntry type="module" module-name="LucianMSBot" />
+    <orderEntry type="library" name="Discord4j-2.9.3-shaded" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-6.0.6" level="project" />
+    <orderEntry type="library" name="Apache" level="application" />
+    <orderEntry type="library" name="Logger" level="application" />
   </component>
 </module>
