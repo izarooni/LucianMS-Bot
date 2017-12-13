@@ -16,6 +16,7 @@ public class DiscordResponseManager {
         responses[Headers.SetHair.value] = new HairChangeResponse();
         responses[Headers.Online.value] = new OnlineResponse();
         responses[Headers.Bind.value] = new BindResponse();
+        responses[Headers.Search.value] = new SearchResponse();
     }
 
     private DiscordResponseManager() {}

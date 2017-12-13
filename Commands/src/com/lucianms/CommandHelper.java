@@ -1,8 +1,8 @@
 package com.lucianms;
 
 import com.lucianms.cmds.*;
-import com.lucianms.commands.Command;
 import com.lucianms.commands.AbstractCommandHelper;
+import com.lucianms.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -29,6 +29,7 @@ public class CommandHelper extends AbstractCommandHelper {
         commands.put("online", new Online());
         commands.put("permission", new Permission());
         commands.put("bind", new Bind());
+        commands.put("search", new Search());
     }
 
     @Override
