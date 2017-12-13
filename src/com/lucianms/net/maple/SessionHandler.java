@@ -58,7 +58,7 @@ public class SessionHandler implements IoHandler {
             DiscordResponse response = DiscordResponseManager.getResponse(header);
             if (response != null) {
                 try {
-                    LOGGER.info("Message being handled by {}", response.getClass().getSimpleName());
+                    LOGGER.info("Message handle {}", response.getClass().getSimpleName());
                     response.handle(reader);
                 } catch (Throwable t) {
                     LOGGER.error("Failed to handle packet 0x{}", Integer.toHexString(header));
