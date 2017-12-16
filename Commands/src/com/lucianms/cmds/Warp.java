@@ -56,7 +56,7 @@ public class Warp extends BaseCommand {
                         }
                     }
                 } catch (SQLException e) {
-                    createResponse(event).appendContent("An error occurred!").build();
+                    createResponse(event).appendContent("An error occurred!").appendCode("", e.getMessage()).build();
                     e.printStackTrace();
                 }
             } else {
