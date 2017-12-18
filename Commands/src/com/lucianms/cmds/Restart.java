@@ -1,12 +1,12 @@
 package com.lucianms.cmds;
 
 import com.lucianms.BaseCommand;
+import com.lucianms.Discord;
+import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import com.lucianms.Discord;
-import com.lucianms.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -38,8 +38,11 @@ public class Restart extends BaseCommand {
             public void run() {
                 try {
                     Discord.getServer().destroyForcibly();
+                    if (ServerSession.getSession().isActive()) {
+                        ServerSession.getSession().closeNow();
+                    }
 
-                    ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start launch.bat");
+                    ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start " + Discord.getConfig().getString("launcher"));
                     File file = new File(Discord.getConfig().getString("ServerDirectory"));
                     processBuilder.directory(file);
                     Process process = processBuilder.start();
