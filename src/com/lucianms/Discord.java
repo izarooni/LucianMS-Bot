@@ -92,7 +92,7 @@ public class Discord {
             Process process = processBuilder.start();
             Discord.setServer(process);
 
-            TaskExecutor.executeLater(ServerSession::connect, 8000);
+            TaskExecutor.executeLater(ServerSession::connect, 10000);
 
             LOGGER.info("The server is now starting up!");
         } catch (LoginException | InterruptedException | DiscordException | IOException e) {

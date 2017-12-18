@@ -30,6 +30,7 @@ public class CommandHelper extends AbstractCommandHelper {
         commands.put("permission", new Permission());
         commands.put("bind", new Bind());
         commands.put("search", new Search());
+        commands.put("connect", new Connect());
     }
 
     @Override
