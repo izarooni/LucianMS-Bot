@@ -31,6 +31,8 @@ public class CommandHelper extends AbstractCommandHelper {
         commands.put("bind", new Bind());
         commands.put("search", new Search());
         commands.put("connect", new Connect());
+        commands.put("disconnect", new Disconnect());
+        commands.put("help", new Help());
     }
 
     @Override

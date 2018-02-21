@@ -18,7 +18,7 @@ public class OnlineResponse extends DiscordResponse {
 
         MessageBuilder mb = new MessageBuilder(Discord.getBot().getClient()).withChannel(channel);
         EmbedBuilder eb = new EmbedBuilder();
-        eb.withColor(52, 152, 219).withTitle("[ ONLINE PLAYERS ]");
+        eb.withColor(52, 152, 219).withTitle("[ Online Players ]");
 
         byte worlds = reader.readByte();
         for (int a = 0; a < worlds; a++) {

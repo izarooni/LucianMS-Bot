@@ -17,6 +17,7 @@ public class DiscordResponseManager {
         responses[Headers.Online.value] = new OnlineResponse();
         responses[Headers.Bind.value] = new BindResponse();
         responses[Headers.Search.value] = new SearchResponse();
+        responses[Headers.Disconnect.value] = new DisconnectResponse();
     }
 
     private DiscordResponseManager() {}
