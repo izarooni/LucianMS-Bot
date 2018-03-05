@@ -63,7 +63,7 @@ public class Permission extends BaseCommand {
                 if (action.equalsIgnoreCase("give")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
-                            target.getPermissions().give(ID, cperms.name().toLowerCase());
+                            target.getPermissions().give(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {
                         target.getPermissions().give(guild.getGuild().getLongID(), permission);
@@ -73,7 +73,7 @@ public class Permission extends BaseCommand {
                 } else if (action.equalsIgnoreCase("revoke")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
-                            target.getPermissions().revoke(ID, cperms.name().toLowerCase());
+                            target.getPermissions().revoke(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {
                         target.getPermissions().revoke(guild.getGuild().getLongID(), permission);

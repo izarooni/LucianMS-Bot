@@ -2,7 +2,6 @@ package com.lucianms.net.maple.handlers;
 
 import com.lucianms.Discord;
 import com.lucianms.utils.packet.receive.MaplePacketReader;
-import sun.plugin2.message.Message;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
