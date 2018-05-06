@@ -33,6 +33,7 @@ public class CommandHelper extends AbstractCommandHelper {
         commands.put("connect", new Connect());
         commands.put("disconnect", new Disconnect());
         commands.put("help", new Help());
+        commands.put("reloadcs", new ReloadCS());
     }
 
     @Override

@@ -18,9 +18,11 @@ public class DiscordResponseManager {
         responses[Headers.Bind.value] = new BindResponse();
         responses[Headers.Search.value] = new SearchResponse();
         responses[Headers.Disconnect.value] = new DisconnectResponse();
+        responses[Headers.ReloadCS.value] = new ReloadCSResponse();
     }
 
-    private DiscordResponseManager() {}
+    private DiscordResponseManager() {
+    }
 
     public static DiscordResponse getResponse(int i) {
         return responses[i];
