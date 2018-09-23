@@ -19,6 +19,10 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class Permission extends BaseCommand {
 
+    public Permission() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Guild guild = Discord.getGuilds().get(event.getChannel().getGuild().getLongID());

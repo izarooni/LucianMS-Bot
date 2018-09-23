@@ -12,6 +12,10 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class Help extends BaseCommand {
 
+    public Help() {
+        super(false);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         String[][] commands = new String[][]{

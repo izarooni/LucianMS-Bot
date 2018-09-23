@@ -16,7 +16,16 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public abstract class BaseCommand {
 
+    private final boolean permissionRequired;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
+
+    public BaseCommand(boolean permissionRequired) {
+        this.permissionRequired = permissionRequired;
+    }
+
+    public final boolean isPermissionRequired() {
+        return permissionRequired;
+    }
 
     /**
      * Check if the user is allowed to use the specified command

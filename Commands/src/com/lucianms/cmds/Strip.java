@@ -24,6 +24,10 @@ public class Strip extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Strip.class);
 
+    public Strip() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;

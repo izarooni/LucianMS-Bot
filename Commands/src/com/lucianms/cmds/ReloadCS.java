@@ -12,6 +12,10 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
  */
 public class ReloadCS extends BaseCommand {
 
+    public ReloadCS() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         MaplePacketWriter writer = new MaplePacketWriter(1);

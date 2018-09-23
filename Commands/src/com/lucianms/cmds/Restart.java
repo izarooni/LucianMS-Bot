@@ -22,6 +22,10 @@ public class Restart extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Restart.class);
 
+    public Restart() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         if (Discord.getServer() == null) {

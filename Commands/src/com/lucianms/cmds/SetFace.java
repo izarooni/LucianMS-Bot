@@ -14,6 +14,10 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class SetFace extends BaseCommand {
 
+    public SetFace() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;

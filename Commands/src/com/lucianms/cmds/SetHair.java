@@ -1,11 +1,11 @@
 package com.lucianms.cmds;
 
-import com.lucianms.utils.packet.send.MaplePacketWriter;
 import com.lucianms.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
+import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -13,6 +13,10 @@ import sx.blah.discord.util.MessageBuilder;
  * @author izarooni
  */
 public class SetHair extends BaseCommand {
+
+    public SetHair() {
+        super(true);
+    }
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {

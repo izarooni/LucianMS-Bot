@@ -12,6 +12,10 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
  */
 public class Bind extends BaseCommand {
 
+    public Bind() {
+        super(false);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;

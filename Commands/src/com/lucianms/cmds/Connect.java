@@ -14,6 +14,10 @@ public class Connect extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Connect.class);
 
+    public Connect() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         LOGGER.info("Attempting to create connection to server");

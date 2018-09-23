@@ -1,10 +1,10 @@
 package com.lucianms.cmds;
 
 import com.lucianms.BaseCommand;
+import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import com.lucianms.commands.Command;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -12,6 +12,10 @@ import sx.blah.discord.handle.obj.IMessage;
  * @author izarooni
  */
 public class SafeShutdown extends BaseCommand {
+
+    public SafeShutdown() {
+        super(true);
+    }
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
@@ -23,6 +27,7 @@ public class SafeShutdown extends BaseCommand {
             message.edit("Complete... Goodbye!");
         } catch (NullPointerException e) {
             message.edit("No server connection established. Probably already shut down. Goodbye!");
-        } System.exit(0);
+        }
+        System.exit(0);
     }
 }

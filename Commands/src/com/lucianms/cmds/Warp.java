@@ -20,6 +20,10 @@ public class Warp extends BaseCommand {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
+    public Warp() {
+        super(true);
+    }
+
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
