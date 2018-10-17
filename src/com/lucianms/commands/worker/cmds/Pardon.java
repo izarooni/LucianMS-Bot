@@ -3,8 +3,8 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 public class Pardon extends BaseCommand {
@@ -25,12 +25,12 @@ public class Pardon extends BaseCommand {
             Discord.updateBlacklistedWords();
             createResponse(event).withContent("Word(s) successfully removed from the blacklist!", MessageBuilder.Styles.ITALICS).build();
         } else {
-            EmbedObject embed = createEmbed()
+            EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" [words...]")
-                    .appendDesc("\r\n**example**: ").appendDesc(getName()).appendDesc(" word1 word2 word3").build();
-            createResponse(event).withEmbed(embed).build();
+                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <words...>")
+                    .appendDesc("\r\n**example**: ").appendDesc(getName()).appendDesc(" word1 word2 word3");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

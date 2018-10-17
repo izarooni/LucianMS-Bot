@@ -1,6 +1,7 @@
 package com.lucianms.commands.worker;
 
 import com.lucianms.commands.Command;
+import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.cmds.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,11 +58,21 @@ public class CommandExecutor {
             return;
         }
         BaseCommand base = commands.get(command.getCommand());
-        if (base != null ) {
-            if (!base.isPermissionRequired() || base.canExecute(event, command.getCommand().toLowerCase())) {
-                base.invoke(event, command);
+        if (base != null) {
+            CommandType commandType = base.getCommandType();
+            // channel type (private or public) matches command requirement
+            if (commandType.canUseCommand(event.getChannel())) {
+                if (!event.getChannel().isPrivate()) { // is a public discord channel
+                    if (!base.isPermissionRequired() || base.canExecute(event, command.getCommand().toLowerCase())) {
+                        base.invoke(event, command);
+                    } else {
+                        event.getChannel().sendMessage("You do not have permission to use this command");
+                    }
+                } else { // is private message
+                    base.invoke(event, command);
+                }
             } else {
-                event.getChannel().sendMessage("You do not have permission to use this command");
+                event.getChannel().sendMessage("This command cannot be used here");
             }
         }
     }

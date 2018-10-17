@@ -5,6 +5,7 @@ import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 public class Forbid extends BaseCommand {
@@ -26,10 +27,10 @@ public class Forbid extends BaseCommand {
         } else {
             StringBuilder sb = new StringBuilder();
             Discord.getBlacklistedWords().forEach(w -> sb.append(w).append(" "));
-            EmbedObject embed = createEmbed()
+            EmbedBuilder embed = createEmbed()
                     .withTitle("Every forbidden word")
-                    .appendDesc(sb.toString()).build();
-            createResponse(event).withEmbed(embed).build();
+                    .appendDesc(sb.toString());
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }
