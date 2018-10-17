@@ -37,7 +37,7 @@ public class Permission extends BaseCommand {
                 return;
             }
             if (guild.getGuild().getRoleByID(ID) != null) {
-                if (action.equalsIgnoreCase("give")) {
+                if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
                             guild.getPermissions().give(ID, cperms.name().toLowerCase());
@@ -47,7 +47,7 @@ public class Permission extends BaseCommand {
                     }
                     guild.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();
-                } else if (action.equalsIgnoreCase("revoke")) {
+                } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
                             guild.getPermissions().revoke(ID, cperms.name().toLowerCase());
@@ -64,7 +64,7 @@ public class Permission extends BaseCommand {
                 if (target == null) {
                     target = guild.addUser(iu);
                 }
-                if (action.equalsIgnoreCase("give")) {
+                if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
                             target.getPermissions().give(guild.getId(), cperms.name().toLowerCase());
@@ -74,7 +74,7 @@ public class Permission extends BaseCommand {
                     }
                     target.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();
-                } else if (action.equalsIgnoreCase("revoke")) {
+                } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {
                             target.getPermissions().revoke(guild.getId(), cperms.name().toLowerCase());

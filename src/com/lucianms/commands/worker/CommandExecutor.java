@@ -1,6 +1,6 @@
-package com.lucianms;
+package com.lucianms.commands.worker;
 
-import com.lucianms.cmds.*;
+import com.lucianms.commands.worker.cmds.*;
 import com.lucianms.commands.AbstractCommandHelper;
 import com.lucianms.commands.Command;
 import org.slf4j.Logger;
@@ -35,6 +35,8 @@ public class CommandHelper extends AbstractCommandHelper {
         commands.put("disconnect",   new Disconnect());
         commands.put("help",         new Help());
         commands.put("reloadcs",     new ReloadCS());
+        commands.put("getroles",     new GetRoles());
+        commands.put("reserve",      new Reserve());
         // @formatter:on
     }
 
