@@ -35,6 +35,8 @@ public class CommandExecutor {
         commands.put("reloadcs",     new ReloadCS());
         commands.put("getroles",     new GetRoles());
         commands.put("reserve",      new Reserve());
+        commands.put("forbid",       new Forbid());
+        commands.put("pardon",       new Pardon());
         commands.put("job",          new Job());
         // @formatter:on
     }

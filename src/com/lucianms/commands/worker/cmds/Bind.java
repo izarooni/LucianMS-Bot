@@ -1,7 +1,7 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
@@ -14,6 +14,11 @@ public class Bind extends BaseCommand {
 
     public Bind() {
         super(false);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Connects your Discord account to your in-game account";
     }
 
     @Override

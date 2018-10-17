@@ -19,6 +19,11 @@ public class SetHair extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Change the hair of a specified in-game player";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {

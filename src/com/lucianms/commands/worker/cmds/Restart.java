@@ -27,6 +27,11 @@ public class Restart extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Attempt to safely shutdown and restart the server";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         if (Discord.getServer() == null) {
             event.getChannel().sendMessage("Could not find the server process");

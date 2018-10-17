@@ -19,6 +19,11 @@ public class Reserve extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Reserve an in-game username for a specified account";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {

@@ -1,15 +1,16 @@
 package com.lucianms.commands.worker;
 
 import com.lucianms.Discord;
+import com.lucianms.commands.Command;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
-import com.lucianms.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 /**
@@ -23,6 +24,12 @@ public abstract class BaseCommand {
     public BaseCommand(boolean permissionRequired) {
         this.permissionRequired = permissionRequired;
     }
+
+    public final String getName() {
+        return Discord.getConfig().getString("CommandTrigger") + getClass().getSimpleName().toLowerCase();
+    }
+
+    public abstract String getDescription();
 
     public final boolean isPermissionRequired() {
         return permissionRequired;
@@ -64,5 +71,9 @@ public abstract class BaseCommand {
 
     public final MessageBuilder createResponse(MessageReceivedEvent event) {
         return new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel());
+    }
+
+    public final EmbedBuilder createEmbed(MessageReceivedEvent event) {
+        return new EmbedBuilder().withColor(26, 188, 156);
     }
 }

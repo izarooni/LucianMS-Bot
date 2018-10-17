@@ -17,6 +17,11 @@ public class ReloadCS extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Reload the in-game Cash Shop commodities";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         MaplePacketWriter writer = new MaplePacketWriter(1);
         writer.write(Headers.ReloadCS.value);

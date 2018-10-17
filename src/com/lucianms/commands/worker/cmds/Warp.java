@@ -1,9 +1,9 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.utils.Database;
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.utils.Database;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
@@ -22,6 +22,11 @@ public class Warp extends BaseCommand {
 
     public Warp() {
         super(true);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Warp a specified offline character";
     }
 
     @Override

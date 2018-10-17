@@ -17,6 +17,11 @@ public class Online extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Display a list of all online in-game players";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         MaplePacketWriter writer = new MaplePacketWriter(1);
         writer.write(Headers.Online.value);

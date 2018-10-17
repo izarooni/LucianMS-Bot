@@ -13,6 +13,11 @@ public class GetRoles extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Display a list of the Discord server's roles and ID";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         StringBuilder content = new StringBuilder();
         for (IRole role : event.getGuild().getRoles()) {

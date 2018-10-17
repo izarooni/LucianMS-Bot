@@ -24,6 +24,11 @@ public class Permission extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Add or remove permissions for a specified Discord user";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Guild guild = Discord.getGuilds().get(event.getChannel().getGuild().getLongID());
 

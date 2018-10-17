@@ -1,9 +1,9 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.utils.Database;
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.utils.Database;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
@@ -22,6 +22,11 @@ public class Job extends BaseCommand {
 
     public Job() {
         super(true);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Change the job of a specified offline player";
     }
 
     @Override
@@ -47,7 +52,7 @@ public class Job extends BaseCommand {
                         try (ResultSet rs = query.executeQuery()) {
                             if (rs.next()) {
                                 if (rs.getInt("total") == 1) {
-                                    try (PreparedStatement update = Database.getConnection().prepareStatement("update characters set job = ? where name = ?")) {
+                                    try (PreparedStatement update = con.prepareStatement("update characters set job = ? where name = ?")) {
                                         update.setInt(1, jobId);
                                         update.setString(2, username);
                                         update.executeUpdate();

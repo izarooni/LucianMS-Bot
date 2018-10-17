@@ -29,6 +29,11 @@ public class Strip extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Strip a specified offline character";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {

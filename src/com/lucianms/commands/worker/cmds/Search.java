@@ -17,6 +17,11 @@ public class Search extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Search for a thing in the in-game files";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length > 1) {

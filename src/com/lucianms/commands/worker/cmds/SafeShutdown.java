@@ -18,6 +18,11 @@ public class SafeShutdown extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Attempt to safely shutdown the server";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         IMessage message = event.getChannel().sendMessage("Stopping the server...");
         try {

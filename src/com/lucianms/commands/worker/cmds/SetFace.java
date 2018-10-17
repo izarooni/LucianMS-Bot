@@ -19,6 +19,11 @@ public class SetFace extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Change the face of a specified in-game player";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {

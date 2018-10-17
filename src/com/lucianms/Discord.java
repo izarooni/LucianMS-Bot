@@ -16,6 +16,7 @@ import sx.blah.discord.util.DiscordException;
 import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -115,6 +116,18 @@ public class Discord {
         JSONObject dbJson = config.getJsonObject("Database");
         if (dbJson.getBoolean("Enabled")) {
             Database.init(dbJson.getString("Host"), dbJson.getString("Schema"), dbJson.getString("Username"), dbJson.getString("Password"));
+        }
+    }
+
+    public static void updateBlacklistedWords() {
+        try (FileOutputStream fos = new FileOutputStream(new File("blacklist.txt"), false)) {
+            StringBuilder sb = new StringBuilder();
+            blacklistedWords.forEach(w -> sb.append(w).append("\r\n"));
+            sb.setLength(sb.length() - (sb.length() > 0 ? 2 : 0));
+            fos.write(sb.toString().getBytes());
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

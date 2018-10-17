@@ -22,6 +22,11 @@ public class Disconnect extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Disconnect a specified player from LucianMS in-game";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {

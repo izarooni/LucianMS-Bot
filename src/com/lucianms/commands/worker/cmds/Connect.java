@@ -19,6 +19,11 @@ public class Connect extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Connects the Discord bot to the server";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         LOGGER.info("Attempting to create connection to server");
         ServerSession.connect();

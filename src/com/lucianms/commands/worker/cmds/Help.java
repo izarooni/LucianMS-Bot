@@ -17,6 +17,11 @@ public class Help extends BaseCommand {
     }
 
     @Override
+    public String getDescription() {
+        return "Display a list of commands that you have permission for";
+    }
+
+    @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         String[][] commands = new String[][]{
                 {"Bind", "Connect your Discord and Lucian account"},
@@ -38,7 +43,7 @@ public class Help extends BaseCommand {
         eb.withColor(52, 152, 219).withTitle("[ Available Commands ]");
         for (String[] info : commands) {
             if (canExecute(event, info[0])) {
-                eb.appendField(info[0], info[1], true);
+                eb.appendField(info[0], info[1], false);
             }
         }
         mb.withEmbed(eb.build()).build();
