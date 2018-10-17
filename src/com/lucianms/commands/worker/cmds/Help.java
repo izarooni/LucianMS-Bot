@@ -1,6 +1,5 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandExecutor;
@@ -23,9 +22,9 @@ public class Help extends BaseCommand {
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
-        EmbedBuilder embed = createEmbed(event).withTitle("Available commands");
+        EmbedBuilder embed = createEmbed().withTitle("Available commands");
         for (BaseCommand base : CommandExecutor.getCommands()) {
-            if (canExecute(event, base.getClass().getSimpleName())) {
+            if (!base.isPermissionRequired() || canExecute(event, base.getClass().getSimpleName().toLowerCase())) {
                 embed.appendDesc("\r\n**").appendDesc(base.getName()).appendDesc("** - ").appendDesc(base.getDescription());
             }
         }

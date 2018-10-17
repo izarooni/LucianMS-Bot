@@ -93,8 +93,7 @@ public class Permissions {
     }
 
     private ArrayList<String> getByKey(Long key) {
-        permissions.putIfAbsent(key, new ArrayList<>());
-        return permissions.get(key);
+        return permissions.computeIfAbsent(key, k -> new ArrayList<>());
     }
 
     public boolean contains(Long key, String permission) {
@@ -106,7 +105,7 @@ public class Permissions {
         if (!perms.contains(permission)) {
             return perms.add(permission);
         } else {
-            LOGGER.warn("'{}' {} already has permission {} in key", object.getClass().getSimpleName(), object.getLongID(), permission, key);
+            LOGGER.warn("'{}' {} already has permission {} in key {}", object.getClass().getSimpleName(), object.getLongID(), permission, key);
         }
         return false;
     }

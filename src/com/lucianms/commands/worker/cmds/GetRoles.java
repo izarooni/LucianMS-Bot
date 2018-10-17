@@ -1,10 +1,10 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.util.EmbedBuilder;
 
 public class GetRoles extends BaseCommand {
 
@@ -19,10 +19,10 @@ public class GetRoles extends BaseCommand {
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
-        StringBuilder content = new StringBuilder();
+        EmbedBuilder embed = createEmbed();
         for (IRole role : event.getGuild().getRoles()) {
-            content.append(String.format("%s - %s\r\n", role.getName(), role.getStringID()));
+            embed.appendDesc(String.format("%d - %s\r\n", role.getLongID(), role.getName()));
         }
-        createResponse(event).appendContent(content.toString(), MessageBuilder.Styles.CODE).build();
+        createResponse(event).withEmbed(embed.build()).build();
     }
 }

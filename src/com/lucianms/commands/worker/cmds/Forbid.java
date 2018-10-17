@@ -30,7 +30,7 @@ public class Forbid extends BaseCommand {
         } else {
             StringBuilder sb = new StringBuilder();
             Discord.getBlacklistedWords().forEach(w -> sb.append(w).append(" "));
-            EmbedObject embed = createEmbed(event)
+            EmbedObject embed = createEmbed()
                     .withTitle("Every forbidden word")
                     .appendDesc(sb.toString()).build();
             createResponse(event).withEmbed(embed).build();

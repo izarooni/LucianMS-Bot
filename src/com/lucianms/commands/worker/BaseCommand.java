@@ -73,7 +73,7 @@ public abstract class BaseCommand {
         return new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel());
     }
 
-    public final EmbedBuilder createEmbed(MessageReceivedEvent event) {
+    public final EmbedBuilder createEmbed() {
         return new EmbedBuilder().withColor(26, 188, 156);
     }
 }

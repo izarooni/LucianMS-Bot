@@ -1,9 +1,9 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.commands.worker.CPermissions;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CPermissions;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -33,7 +33,7 @@ public class Permission extends BaseCommand {
         Guild guild = Discord.getGuilds().get(event.getChannel().getGuild().getLongID());
 
         Command.CommandArg[] args = command.args;
-        if (args.length == 3) {
+        if (args.length >= 3) {
             String action = args[0].toString();
             Long ID = args[1].parseNumber();
             String permission = args[2].toString();
@@ -47,8 +47,10 @@ public class Permission extends BaseCommand {
                         for (CPermissions cperms : CPermissions.values()) {
                             guild.getPermissions().give(ID, cperms.name().toLowerCase());
                         }
-                    } else{
-                        guild.getPermissions().give(ID, permission);
+                    } else {
+                        for (int i = 2; i < args.length; i++) {
+                            guild.getPermissions().give(ID, args[i].toString());
+                        }
                     }
                     guild.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();
@@ -58,7 +60,9 @@ public class Permission extends BaseCommand {
                             guild.getPermissions().revoke(ID, cperms.name().toLowerCase());
                         }
                     } else {
-                        guild.getPermissions().revoke(ID, permission);
+                        for (int i = 2; i < args.length; i++) {
+                            guild.getPermissions().revoke(ID, args[i].toString());
+                        }
                     }
                     guild.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();
@@ -75,7 +79,9 @@ public class Permission extends BaseCommand {
                             target.getPermissions().give(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {
-                        target.getPermissions().give(guild.getGuild().getLongID(), permission);
+                        for (int i = 2; i < args.length; i++) {
+                            target.getPermissions().give(guild.getGuild().getLongID(), args[i].toString());
+                        }
                     }
                     target.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();
@@ -85,7 +91,9 @@ public class Permission extends BaseCommand {
                             target.getPermissions().revoke(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {
-                        target.getPermissions().revoke(guild.getGuild().getLongID(), permission);
+                        for (int i = 2; i < args.length; i++) {
+                            target.getPermissions().revoke(guild.getGuild().getLongID(), args[i].toString());
+                        }
                     }
                     target.getPermissions().save();
                     createResponse(event).appendContent("Success!").build();

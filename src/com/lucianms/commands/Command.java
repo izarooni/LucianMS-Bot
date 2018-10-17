@@ -60,7 +60,7 @@ public class Command {
         }
     }
 
-    public static boolean isValid(MessageReceivedEvent event) {
+    public static boolean isValidCommand(MessageReceivedEvent event) {
         return event.getMessage().getAuthor().getLongID() != Discord.getBot().getClient().getOurUser().getLongID() // bot mustn't self-execute
                 && event.getMessage().getContent().startsWith(Discord.getConfig().getString("CommandTrigger"));
     }
@@ -71,12 +71,8 @@ public class Command {
         if (sp.length > 0) {
             String name = sp[1]; // the command put lowercase
             String[] args; // n-1 of sp; args of the command
-            if (mSplit.length > 0) {
-                args = new String[mSplit.length - 1];
-                System.arraycopy(mSplit, 1, args, 0, args.length);
-            } else {
-                args = new String[0];
-            }
+            args = new String[mSplit.length - 1];
+            System.arraycopy(mSplit, 1, args, 0, args.length);
             return new Command(name, args);
         } else {
             return null;
@@ -102,9 +98,6 @@ public class Command {
         for (int i = 0; i < args.length; i++) {
             CommandArg arg = args[i];
             if (arg.equals(pre)) {
-                if (i > args.length) {
-                    return new CommandArg(-1, d);
-                }
                 return args[i + 1];
             }
         }

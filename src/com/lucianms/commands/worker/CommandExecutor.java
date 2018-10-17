@@ -63,8 +63,6 @@ public class CommandExecutor {
             } else {
                 event.getChannel().sendMessage("You do not have permission to use this command");
             }
-        } else {
-            LOGGER.info("Unable to find handler for command {}", command.getCommand());
         }
     }
 }

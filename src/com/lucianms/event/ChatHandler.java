@@ -18,7 +18,7 @@ public class ChatHandler {
     @EventSubscriber
     public void onGuildMessageReceived(MessageReceivedEvent event) {
         String content = event.getMessage().getContent();
-        if (!event.getAuthor().getRolesForGuild(event.getGuild()).stream().anyMatch(r -> r.getPermissions().contains(Permissions.MANAGE_MESSAGES))) {
+        if (event.getAuthor().getRolesForGuild(event.getGuild()).stream().noneMatch(r -> r.getPermissions().contains(Permissions.MANAGE_MESSAGES))) {
             for (String words : Discord.getBlacklistedWords()) {
                 Pattern pattern = Pattern.compile(words, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
                 Matcher matcher = pattern.matcher(content);
@@ -28,7 +28,7 @@ public class ChatHandler {
                 }
             }
         }
-        if (Command.isValid(event)) {
+        if (Command.isValidCommand(event)) {
             CommandExecutor.execute(event);
         }
     }

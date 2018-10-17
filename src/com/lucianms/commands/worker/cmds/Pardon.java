@@ -29,7 +29,7 @@ public class Pardon extends BaseCommand {
             Discord.updateBlacklistedWords();
             createResponse(event).withContent("Word(s) successfully removed from the blacklist!", MessageBuilder.Styles.ITALICS).build();
         } else {
-            EmbedObject embed = createEmbed(event)
+            EmbedObject embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
                     .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" [words...]")
