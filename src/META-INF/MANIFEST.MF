@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Class-Path: Discord4j-2.9.3-shaded.jar slf4j-api-1.7.25.jar slf4j-simp
- le-1.7.25.jar mysql-connector-java-6.0.6.jar commons-io-2.4.jar commo
- ns-net-3.6.jar mina-core-2.0.16.jar
+Class-Path: Discord4j-2.10.1-shaded.jar slf4j-api-1.7.25.jar slf4j-sim
+ ple-1.7.25.jar mysql-connector-java-6.0.6.jar commons-io-2.6.jar comm
+ ons-net-3.6.jar mina-core-2.0.19.jar
 Main-Class: com.lucianms.Discord
 

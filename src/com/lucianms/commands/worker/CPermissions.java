@@ -1,4 +1,4 @@
-package com.lucianms;
+package com.lucianms.commands.worker;
 
 /**
  * @author izarooni

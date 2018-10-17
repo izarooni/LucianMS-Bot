@@ -1,9 +1,6 @@
 package test;
 
-import com.lucianms.io.Defaults;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 /**
  * @author izarooni
@@ -11,12 +8,10 @@ import java.net.URISyntaxException;
 public class Tester {
 
     public static void main(String[] args) {
-        try {
-            Defaults.createDefault("", "config.json");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String content = "aries";
+        String pattern = "aries";
+
+        boolean matches = Pattern.matches(Pattern.compile(pattern).pattern(), content);
+        System.out.println(matches);
     }
 }

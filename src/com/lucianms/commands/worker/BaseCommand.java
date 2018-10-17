@@ -1,5 +1,6 @@
-package com.lucianms;
+package com.lucianms.commands.worker;
 
+import com.lucianms.Discord;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import com.lucianms.commands.Command;

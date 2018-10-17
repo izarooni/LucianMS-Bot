@@ -1,10 +1,9 @@
-package com.lucianms.cmds;
+package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.utils.Database;
-import com.lucianms.utils.HexUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -27,6 +26,20 @@ public class Reserve extends BaseCommand {
             String username = args[1].toString();
             Connection con = Database.getConnection();
             try {
+                try (PreparedStatement ps = con.prepareStatement("select count(*) as total from characters where name = ?")) {
+                    ps.setString(1, username);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            if (rs.getInt("total") != 0) {
+                                createResponse(event)
+                                        .appendContent("The username ")
+                                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
+                                        .appendContent(" is already being used by an existing player").build();
+                                return;
+                            }
+                        }
+                    }
+                }
                 try (PreparedStatement ps = con.prepareStatement("select count(*) as total from accounts where name = ?")) {
                     ps.setString(1, account);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -34,7 +47,8 @@ public class Reserve extends BaseCommand {
                             if (rs.getInt("total") != 1) {
                                 createResponse(event)
                                         .appendContent("No such account with the username ")
-                                        .appendCode(username, "").build();
+                                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
+                                        .appendContent(" but I will reserve it anyways").build();
                             }
                         }
                     }
@@ -57,35 +71,39 @@ public class Reserve extends BaseCommand {
                 event.getChannel().sendMessage("An error occurred while trying to find that account");
                 return;
             }
-                try {
-                    try (PreparedStatement ps = con.prepareStatement("insert into ign_reserves values (?, ?)")) {
-                        ps.setString(1, account);
-                        ps.setString(2, username);
-                        ps.executeUpdate();
-                        createResponse(event)
-                                .appendContent("IGN ")
-                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                .appendContent(" reserved for the user ")
-                                .appendContent(account, MessageBuilder.Styles.INLINE_CODE).build();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    event.getChannel().sendMessage("An error occurred.");
+            try {
+                try (PreparedStatement ps = con.prepareStatement("insert into ign_reserves values (?, ?)")) {
+                    ps.setString(1, account);
+                    ps.setString(2, username);
+                    ps.executeUpdate();
+                    createResponse(event)
+                            .appendContent("IGN ")
+                            .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
+                            .appendContent(" reserved for the user ")
+                            .appendContent(account, MessageBuilder.Styles.INLINE_CODE).build();
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                event.getChannel().sendMessage("An error occurred.");
+            }
         } else if (args.length == 1) {
             Connection con = Database.getConnection();
             String username = args[0].toString();
-            try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where reserve = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where username = ?")) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        createResponse(event)
-                                .appendContent("The username ")
-                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                .appendContent(" is reserved by the user ")
-                                .appendContent(rs.getString("username"), MessageBuilder.Styles.INLINE_CODE).build();
+                    StringBuilder sb = new StringBuilder();
+                    while (rs.next()) {
+                        sb.append(rs.getString("reserve")).append("\r\n");
+                    }
+                    if (sb.length() == 0) {
+                        event.getChannel().sendMessage("There is no igns reserved to the username");
                     } else {
-                        event.getChannel().sendMessage("There is no unique keycode assigned to the username");
+                        createResponse(event)
+                                .appendContent("The username(s) reserved by ")
+                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
+                                .appendContent(" ")
+                                .appendContent(sb.toString(), MessageBuilder.Styles.CODE).build();
                     }
                 }
             } catch (SQLException e) {

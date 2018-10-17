@@ -1,14 +1,11 @@
-package com.lucianms.cmds;
+package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.BaseCommand;
-import com.lucianms.Discord;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-
-import java.security.SecurityPermission;
 
 /**
  * @author izarooni

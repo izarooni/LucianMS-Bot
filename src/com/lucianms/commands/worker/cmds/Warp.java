@@ -1,7 +1,7 @@
-package com.lucianms.cmds;
+package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.utils.Database;
-import com.lucianms.BaseCommand;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import org.slf4j.LoggerFactory;

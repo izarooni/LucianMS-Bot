@@ -1,6 +1,7 @@
 package com.lucianms.commands;
 
 import com.lucianms.Discord;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 /**
  * @author izarooni
@@ -57,6 +58,11 @@ public class Command {
         for (int i = 0; i < args.length; i++) {
             this.args[i] = new CommandArg(i, args[i]);
         }
+    }
+
+    public static boolean isValid(MessageReceivedEvent event) {
+        return event.getMessage().getAuthor().getLongID() != Discord.getBot().getClient().getOurUser().getLongID() // bot mustn't self-execute
+                && event.getMessage().getContent().startsWith(Discord.getConfig().getString("CommandTrigger"));
     }
 
     public static Command parse(String text) {

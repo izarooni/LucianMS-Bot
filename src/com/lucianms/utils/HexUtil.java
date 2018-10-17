@@ -22,10 +22,21 @@
 package com.lucianms.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
+import java.util.Random;
 
 public class HexUtil {
 
+
     private static final char[] HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] chars;
+
+    static {
+        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        str += str.toLowerCase(Locale.ROOT);
+        str += "0123456789";
+        chars = str.toCharArray();
+    }
 
     private static String toString(byte byteValue) {
         int tmp = byteValue << 8;
@@ -76,5 +87,14 @@ public class HexUtil {
             }
         }
         return baos.toByteArray();
+    }
+
+
+    public static String createRandomString(int len) {
+        char[] buffer = new char[len];
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = chars[new Random().nextInt(chars.length)];
+        }
+        return new String(buffer);
     }
 }

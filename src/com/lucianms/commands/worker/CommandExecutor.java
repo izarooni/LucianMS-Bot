@@ -1,8 +1,7 @@
 package com.lucianms.commands.worker;
 
-import com.lucianms.commands.worker.cmds.*;
-import com.lucianms.commands.AbstractCommandHelper;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.cmds.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -12,14 +11,13 @@ import java.util.HashMap;
 /**
  * @author izarooni
  */
-public class CommandHelper extends AbstractCommandHelper {
+public class CommandExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandExecutor.class);
 
-    private HashMap<String, BaseCommand> commands = new HashMap<>();
+    private static HashMap<String, BaseCommand> commands = new HashMap<>();
 
-    @Override
-    public void onLoad() {
+    static {
         // @formatter:off
         commands.put("warp",         new Warp());
         commands.put("strip",        new Strip());
@@ -40,13 +38,7 @@ public class CommandHelper extends AbstractCommandHelper {
         // @formatter:on
     }
 
-    @Override
-    public void onUnload() {
-        commands.clear();
-    }
-
-    @Override
-    public void onCommand(MessageReceivedEvent event) {
+    public static void execute(MessageReceivedEvent event) {
         Command command = Command.parse(event.getMessage().getContent());
         if (command == null) {
             // not a command
