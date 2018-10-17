@@ -23,7 +23,7 @@ public class Forbid extends BaseCommand {
                 Discord.getBlacklistedWords().add(arg.toString());
             }
             Discord.updateBlacklistedWords();
-            createResponse(event).withContent("Word(s) successfully blacklisted!", MessageBuilder.Styles.ITALICS).build();
+            createResponse(event).withContent("Word(s) successfully blacklisted!").build();
         } else {
             StringBuilder sb = new StringBuilder();
             Discord.getBlacklistedWords().forEach(w -> sb.append(w).append(" "));

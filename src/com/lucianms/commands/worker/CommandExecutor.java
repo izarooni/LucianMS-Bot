@@ -42,6 +42,7 @@ public class CommandExecutor {
         commands.put("forbid",       new Forbid());
         commands.put("pardon",       new Pardon());
         commands.put("job",          new Job());
+        commands.put("register",     new Register());
         // @formatter:on
     }
 

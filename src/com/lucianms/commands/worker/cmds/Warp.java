@@ -49,7 +49,7 @@ public class Warp extends BaseCommand {
                         try (ResultSet rs = query.executeQuery()) {
                             if (rs.next()) {
                                 if (rs.getInt("total") == 1) {
-                                    try (PreparedStatement update = Database.getConnection().prepareStatement("update characters set map = ? where name = ?")) {
+                                    try (PreparedStatement update = con.prepareStatement("update characters set map = ? where name = ?")) {
                                         update.setInt(1, mapId);
                                         update.setString(2, username);
                                         update.executeUpdate();

@@ -26,7 +26,7 @@ public class Online extends BaseCommand {
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
         if (ServerSession.getSession() == null) {
-            createResponse(event).withContent("The server is currently not online!", MessageBuilder.Styles.ITALICS).build();
+            createResponse(event).withContent("The server is currently not online!").build();
         } else {
             MaplePacketWriter writer = new MaplePacketWriter(1);
             writer.write(Headers.Online.value);

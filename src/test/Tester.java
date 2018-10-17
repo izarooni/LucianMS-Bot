@@ -1,6 +1,5 @@
 package test;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -9,11 +8,11 @@ import java.util.regex.Pattern;
 public class Tester {
 
     public static void main(String[] args) {
-        String content = "asdjfalkfAries";
-        String regex = "aries";
-
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-        Matcher matcher = pattern.matcher(content);
-        System.out.println(matcher.find());
+        String content = "izarooni";
+        if (!content.matches(Pattern.compile("[a-zA-Z0-9]{4,}").pattern())) {
+            System.out.println("fail");
+        } else {
+            System.out.println("Success");
+        }
     }
 }

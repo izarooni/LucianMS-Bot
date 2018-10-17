@@ -20,7 +20,6 @@ public class SessionHandler implements IoHandler {
 
     @Override
     public void sessionCreated(IoSession ioSession) throws Exception {
-        LOGGER.info("Session #{} created", ioSession.getId());
     }
 
     @Override
@@ -31,13 +30,11 @@ public class SessionHandler implements IoHandler {
 
     @Override
     public void sessionClosed(IoSession ioSession) throws Exception {
-        LOGGER.info("Session #{} closed", ioSession.getId());
         ServerSession.setSession(null);
     }
 
     @Override
     public void sessionIdle(IoSession ioSession, IdleStatus idleStatus) throws Exception {
-        LOGGER.info("Session #{} idle", ioSession.getId());
     }
 
     @Override
@@ -51,7 +48,6 @@ public class SessionHandler implements IoHandler {
 
     @Override
     public void messageReceived(IoSession ioSession, Object o) throws Exception {
-        LOGGER.info("Session #{} received message", ioSession.getId());
         if (o instanceof byte[]) {
             MaplePacketReader reader = new MaplePacketReader((byte[]) o);
             byte header = reader.readByte();
@@ -72,12 +68,10 @@ public class SessionHandler implements IoHandler {
 
     @Override
     public void messageSent(IoSession ioSession, Object o) throws Exception {
-        LOGGER.info("Session #{} message sent", ioSession.getId());
     }
 
     @Override
     public void inputClosed(IoSession ioSession) throws Exception {
-        LOGGER.info("Session #{} closed input", ioSession.getId());
         ioSession.closeNow();
 
     }

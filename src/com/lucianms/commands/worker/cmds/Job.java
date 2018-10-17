@@ -1,11 +1,11 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.utils.Database;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.sql.Connection;
@@ -68,8 +68,11 @@ public class Job extends BaseCommand {
                 createResponse(event).appendContent("I am currently not connected to the server").build();
             }
         } else {
-            String trigger = Discord.getConfig().getString("CommandTrigger");
-            createResponse(event).appendContent(trigger + "job <username> <job_id>", MessageBuilder.Styles.CODE).build();
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <job ID>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 
