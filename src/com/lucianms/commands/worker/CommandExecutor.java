@@ -6,7 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author izarooni
@@ -39,6 +42,12 @@ public class CommandExecutor {
         commands.put("pardon",       new Pardon());
         commands.put("job",          new Job());
         // @formatter:on
+    }
+
+    public static List<BaseCommand> getCommands() {
+        ArrayList<BaseCommand> list = new ArrayList<>(commands.values());
+        list.sort(Comparator.comparing(BaseCommand::getName));
+        return list;
     }
 
     public static void execute(MessageReceivedEvent event) {
