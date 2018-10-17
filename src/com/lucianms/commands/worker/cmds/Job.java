@@ -20,10 +20,6 @@ public class Job extends BaseCommand {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
-    public Job() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Change the job of a specified offline player";

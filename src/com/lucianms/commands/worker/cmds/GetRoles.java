@@ -8,10 +8,6 @@ import sx.blah.discord.util.EmbedBuilder;
 
 public class GetRoles extends BaseCommand {
 
-    public GetRoles() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Display a list of the Discord server's roles and ID";

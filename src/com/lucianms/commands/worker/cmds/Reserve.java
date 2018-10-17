@@ -14,10 +14,6 @@ import java.sql.SQLException;
 
 public class Reserve extends BaseCommand {
 
-    public Reserve() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Reserve an in-game username for a specified account";

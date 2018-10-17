@@ -14,10 +14,6 @@ public class Connect extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Connect.class);
 
-    public Connect() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Connects the Discord bot to the server";

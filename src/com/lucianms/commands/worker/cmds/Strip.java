@@ -24,10 +24,6 @@ public class Strip extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Strip.class);
 
-    public Strip() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Strip a specified offline character";

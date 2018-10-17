@@ -1,5 +1,6 @@
 package com.lucianms.commands.worker.cmds;
 
+import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
 import com.lucianms.net.maple.Headers;
@@ -14,7 +15,7 @@ import sx.blah.discord.util.MessageBuilder;
 public class Online extends BaseCommand {
 
     public Online() {
-        super(false);
+        super(false, CommandType.Both);
     }
 
     @Override

@@ -12,10 +12,6 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
  */
 public class ReloadCS extends BaseCommand {
 
-    public ReloadCS() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Reload the in-game Cash Shop commodities";

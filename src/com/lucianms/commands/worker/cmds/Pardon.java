@@ -9,10 +9,6 @@ import sx.blah.discord.util.MessageBuilder;
 
 public class Pardon extends BaseCommand {
 
-    public Pardon() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Allows a word that was once forbidden to be spoken";

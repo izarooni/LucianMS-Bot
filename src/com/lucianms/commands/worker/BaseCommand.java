@@ -2,6 +2,7 @@ package com.lucianms.commands.worker;
 
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.CommandType;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import org.slf4j.Logger;
@@ -19,10 +20,20 @@ import sx.blah.discord.util.MessageBuilder;
 public abstract class BaseCommand {
 
     private final boolean permissionRequired;
+    private final CommandType commandType;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
+    public BaseCommand() {
+        this(true, CommandType.Public);
+    }
+
     public BaseCommand(boolean permissionRequired) {
+        this(permissionRequired, CommandType.Public);
+    }
+
+    public BaseCommand(boolean permissionRequired, CommandType commandType) {
         this.permissionRequired = permissionRequired;
+        this.commandType = commandType;
     }
 
     public final String getName() {
@@ -33,6 +44,10 @@ public abstract class BaseCommand {
 
     public final boolean isPermissionRequired() {
         return permissionRequired;
+    }
+
+    public CommandType getCommandType() {
+        return commandType;
     }
 
     /**

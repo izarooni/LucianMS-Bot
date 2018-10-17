@@ -13,10 +13,6 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class Disconnect extends BaseCommand {
 
-    public Disconnect() {
-        super(true);
-    }
-
     @Override
     public boolean canExecute(MessageReceivedEvent event, String permission) {
         return super.canExecute(event, permission);
@@ -38,6 +34,7 @@ public class Disconnect extends BaseCommand {
 
                 MaplePacketWriter writer = new MaplePacketWriter();
                 writer.write(Headers.Disconnect.value);
+                writer.write(0);
                 writer.writeLong(event.getChannel().getLongID());
                 writer.writeMapleString(username);
 

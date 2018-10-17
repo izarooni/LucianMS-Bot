@@ -9,10 +9,6 @@ import sx.blah.discord.util.MessageBuilder;
 
 public class Forbid extends BaseCommand {
 
-    public Forbid() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Forbids a word from being said";

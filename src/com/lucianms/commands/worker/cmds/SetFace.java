@@ -14,10 +14,6 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class SetFace extends BaseCommand {
 
-    public SetFace() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Change the face of a specified in-game player";

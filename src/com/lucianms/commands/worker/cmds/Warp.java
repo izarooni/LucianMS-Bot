@@ -20,10 +20,6 @@ public class Warp extends BaseCommand {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
-    public Warp() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Warp a specified offline character";

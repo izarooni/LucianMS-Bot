@@ -1,6 +1,7 @@
 package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.commands.Command;
+import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
@@ -13,7 +14,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 public class Bind extends BaseCommand {
 
     public Bind() {
-        super(false);
+        super(false, CommandType.Both);
     }
 
     @Override

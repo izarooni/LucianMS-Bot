@@ -57,7 +57,7 @@ public class CommandExecutor {
             return;
         }
         BaseCommand base = commands.get(command.getCommand());
-        if (base != null) {
+        if (base != null ) {
             if (!base.isPermissionRequired() || base.canExecute(event, command.getCommand().toLowerCase())) {
                 base.invoke(event, command);
             } else {

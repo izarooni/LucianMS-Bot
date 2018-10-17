@@ -22,10 +22,6 @@ public class Restart extends BaseCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Restart.class);
 
-    public Restart() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Attempt to safely shutdown and restart the server";

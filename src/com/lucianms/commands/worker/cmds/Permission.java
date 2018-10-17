@@ -19,10 +19,6 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class Permission extends BaseCommand {
 
-    public Permission() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Add or remove permissions for a specified Discord user";

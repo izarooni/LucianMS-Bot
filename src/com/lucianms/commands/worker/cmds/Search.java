@@ -12,10 +12,6 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
  */
 public class Search extends BaseCommand {
 
-    public Search() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Search for a thing in the in-game files";

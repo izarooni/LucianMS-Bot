@@ -13,10 +13,6 @@ import sx.blah.discord.handle.obj.IMessage;
  */
 public class SafeShutdown extends BaseCommand {
 
-    public SafeShutdown() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Attempt to safely shutdown the server";

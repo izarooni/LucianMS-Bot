@@ -14,10 +14,6 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public class SetHair extends BaseCommand {
 
-    public SetHair() {
-        super(true);
-    }
-
     @Override
     public String getDescription() {
         return "Change the hair of a specified in-game player";
