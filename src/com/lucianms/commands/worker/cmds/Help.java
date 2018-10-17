@@ -30,7 +30,8 @@ public class Help extends BaseCommand {
                 {"SetFace", "Change an in-game player's face"},
                 {"SetHair", "Change an in-game players' hair"},
                 {"Strip", "Strip an offline player of all equips"},
-                {"Warp", "Warp an offline player to a map"}
+                {"Warp", "Warp an offline player to a map"},
+                {"Job", "Change the job of an offline player"}
         };
         MessageBuilder mb = new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel());
         EmbedBuilder eb = new EmbedBuilder();
