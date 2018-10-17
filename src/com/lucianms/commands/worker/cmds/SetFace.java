@@ -1,12 +1,13 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 /**
@@ -38,7 +39,11 @@ public class SetFace extends BaseCommand {
             writer.writeInt(faceId);
             ServerSession.sendPacket(writer.getPacket());
         } else {
-            new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel()).appendContent("That doesn't look right... Try this").appendCode("", Discord.getConfig().getString("CommandTrigger") + "setface <username> <face_ID>").build();
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <face ID>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

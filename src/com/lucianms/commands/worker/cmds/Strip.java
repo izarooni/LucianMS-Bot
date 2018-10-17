@@ -1,12 +1,12 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.utils.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.sql.Connection;
@@ -142,8 +142,11 @@ public class Strip extends BaseCommand {
                 e.printStackTrace();
             }
         } else {
-            String trigger = Discord.getConfig().getString("CommandTrigger");
-            createResponse(event).appendContent(trigger + "strip <username>", MessageBuilder.Styles.CODE).build();
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

@@ -6,6 +6,7 @@ import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.utils.Database;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.sql.Connection;
@@ -68,8 +69,11 @@ public class Warp extends BaseCommand {
                 createResponse(event).appendContent("I am currently not connected to the server").build();
             }
         } else {
-            String trigger = Discord.getConfig().getString("CommandTrigger");
-            createResponse(event).appendContent(trigger + "warp <username> <map_id>", MessageBuilder.Styles.CODE).build();
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <map ID>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

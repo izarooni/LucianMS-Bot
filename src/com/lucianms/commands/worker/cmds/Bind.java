@@ -42,7 +42,7 @@ public class Bind extends BaseCommand {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <account name>");
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <account name>`");
             createResponse(event).withEmbed(embed.build()).build();
         }
     }

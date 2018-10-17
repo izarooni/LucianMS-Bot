@@ -17,7 +17,7 @@ public class GetRoles extends BaseCommand {
     public void invoke(MessageReceivedEvent event, Command command) {
         EmbedBuilder embed = createEmbed();
         for (IRole role : event.getGuild().getRoles()) {
-            embed.appendDesc(String.format("%d - %s\r\n", role.getLongID(), role.getName()));
+            embed.appendDesc(String.format("`%d` - %s\r\n", role.getLongID(), role.getName()));
         }
         createResponse(event).withEmbed(embed.build()).build();
     }

@@ -6,6 +6,7 @@ import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 /**
@@ -40,6 +41,12 @@ public class Disconnect extends BaseCommand {
 
                 ServerSession.sendPacket(writer.getPacket());
             }
+        } else {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <username>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

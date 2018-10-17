@@ -1,11 +1,12 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * @author izarooni
@@ -14,7 +15,7 @@ public class Search extends BaseCommand {
 
     @Override
     public String getDescription() {
-        return "Search for a thing in the in-game files";
+        return "Search for a thing's ID via specified name";
     }
 
     @Override
@@ -31,7 +32,13 @@ public class Search extends BaseCommand {
             writer.writeMapleString(message);
             ServerSession.sendPacket(writer.getPacket());
         } else {
-            event.getChannel().sendMessage("Syntax: !search <type> <name> where type is map, use, etc, cash, equip or mob.");
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <type> <name>`")
+                    .appendDesc("\r\n**example**: `").appendDesc(getName()).appendDesc(" item red potion`")
+                    .appendDesc("\r\nThe `<type>` parameter can be any of the following: `map`, `use`, `etc`, `cash`, `equip` or `mob`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

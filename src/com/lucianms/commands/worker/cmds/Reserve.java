@@ -1,10 +1,10 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.utils.Database;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.sql.Connection;
@@ -111,11 +111,11 @@ public class Reserve extends BaseCommand {
                 e.printStackTrace();
             }
         } else {
-            String trigger = Discord.getConfig().getString("CommandTrigger");
-            String syntax = String.format("%sreserve <username> <ign_to_reserve>", trigger);
-            createResponse(event)
-                    .appendContent("Proper syntax goes like this buddy")
-                    .appendCode(syntax, "").build();
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <account name> <ign>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }
