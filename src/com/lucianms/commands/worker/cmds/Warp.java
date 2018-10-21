@@ -3,7 +3,6 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.utils.Database;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
@@ -41,32 +40,27 @@ public class Warp extends BaseCommand {
                 createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid map id").build();
                 return;
             }
-            if (Database.isInitialized()) {
-                try {
-                    Connection con = Database.getConnection();
-                    try (PreparedStatement query = con.prepareStatement("select count(*) as total from characters where name = ?")) {
-                        query.setString(1, username);
-                        try (ResultSet rs = query.executeQuery()) {
-                            if (rs.next()) {
-                                if (rs.getInt("total") == 1) {
-                                    try (PreparedStatement update = con.prepareStatement("update characters set map = ? where name = ?")) {
-                                        update.setInt(1, mapId);
-                                        update.setString(2, username);
-                                        update.executeUpdate();
-                                        createResponse(event).appendContent("Success!").build();
-                                    }
-                                } else {
-                                    createResponse(event).appendContent("Could not find any player named ").appendContent(username, MessageBuilder.Styles.INLINE_CODE).build();
+            try (Connection con = Discord.getConnection()) {
+                try (PreparedStatement query = con.prepareStatement("select count(*) as total from characters where name = ?")) {
+                    query.setString(1, username);
+                    try (ResultSet rs = query.executeQuery()) {
+                        if (rs.next()) {
+                            if (rs.getInt("total") == 1) {
+                                try (PreparedStatement update = con.prepareStatement("update characters set map = ? where name = ?")) {
+                                    update.setInt(1, mapId);
+                                    update.setString(2, username);
+                                    update.executeUpdate();
+                                    createResponse(event).appendContent("Success!").build();
                                 }
+                            } else {
+                                createResponse(event).appendContent("Could not find any player named ").appendContent(username, MessageBuilder.Styles.INLINE_CODE).build();
                             }
                         }
                     }
-                } catch (SQLException e) {
-                    createResponse(event).appendContent("An error occurred!").appendCode("", e.getMessage()).build();
-                    e.printStackTrace();
                 }
-            } else {
-                createResponse(event).appendContent("I am currently not connected to the server").build();
+            } catch (SQLException e) {
+                createResponse(event).appendContent("An error occurred!").build();
+                e.printStackTrace();
             }
         } else {
             EmbedBuilder embed = createEmbed()

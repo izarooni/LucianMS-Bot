@@ -8,7 +8,6 @@ public enum CPermissions {
     Help,
     Warp,
     Strip,
-    Restart,
     SetFace,
     setHair,
     SafeShutdown,

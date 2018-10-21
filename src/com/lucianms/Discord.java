@@ -7,6 +7,7 @@ import com.lucianms.net.maple.ServerSession;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Guild;
 import com.lucianms.utils.Database;
+import com.zaxxer.hikari.HikariDataSource;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,10 +37,15 @@ public class Discord {
     private static Config config;
     private static ConcurrentHashMap<Long, Guild> guilds = new ConcurrentHashMap<>();
     private static ArrayList<String> blacklistedWords = new ArrayList<>();
+    private static HikariDataSource hikari = Database.createDataSource("discord");
 
     private static Process server;
 
     private Discord() {
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return hikari.getConnection();
     }
 
     public static Bot getBot() {
@@ -98,12 +106,21 @@ public class Discord {
             LOGGER.info("Discord bot is now online");
 
             // start the maple server
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start " + config.getString("launcher"));
-            file = new File(Discord.getConfig().getString("ServerDirectory"));
-            processBuilder.directory(file);
-            if (file.exists()) {
-                Process process = processBuilder.start();
-                Discord.setServer(process);
+            for (int i = 0; ; i++) {
+                String launcher = config.getString("launcher" + i);
+                if (launcher == null) {
+                    break;
+                }
+                LOGGER.info("Starting launcher{} : '{}'", i, launcher);
+                ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start " + launcher);
+                file = new File(Discord.getConfig().getString("ServerDirectory"));
+                processBuilder.directory(file);
+                if (file.exists()) {
+                    Process process = processBuilder.start();
+                    Discord.setServer(process);
+                } else {
+                    LOGGER.warn("File does not exist '{}'", file.getAbsolutePath());
+                }
             }
 
             TaskExecutor.executeLater(ServerSession::connect, 10000);
@@ -111,11 +128,6 @@ public class Discord {
             LOGGER.info("The server is now starting up!");
         } catch (LoginException | InterruptedException | DiscordException | IOException e) {
             e.printStackTrace();
-        }
-
-        JSONObject dbJson = config.getJsonObject("Database");
-        if (dbJson.getBoolean("Enabled")) {
-            Database.init(dbJson.getString("Host"), dbJson.getString("Schema"), dbJson.getString("Username"), dbJson.getString("Password"));
         }
     }
 

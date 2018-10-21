@@ -1,8 +1,8 @@
 package com.lucianms.commands.worker.cmds;
 
+import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.utils.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -34,13 +34,12 @@ public class Strip extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {
             String username = args[0].toString();
-            try {
+            try (Connection connection = Discord.getConnection()) {
                 int playerId; // id of the player
                 int equipSlots; // total slots the player has
                 int equippedItems = 0; // items currently equipped
                 int inventoryItems = 0; // items in the equip inventory
 
-                Connection connection = Database.getConnection();
 
                 // get equip slots and id of player
                 try (PreparedStatement ps = connection.prepareStatement("select count(*) as total, id, equipslots from characters where name = ?")) {

@@ -1,5 +1,6 @@
 package com.lucianms.commands.worker.cmds;
 
+import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
@@ -48,8 +49,7 @@ public class Register extends BaseCommand {
             }
             if (username.length() >= 4 && username.length() <= 13) {
                 if (password.length() >= 6) {
-                    Connection connection = Database.getConnection();
-                    try {
+                    try (Connection connection = Discord.getConnection()) {
                         try (PreparedStatement ps = connection.prepareStatement("select name from accounts where discord_id = ?")) {
                             ps.setLong(1, userID);
                             try (ResultSet rs = ps.executeQuery()) {

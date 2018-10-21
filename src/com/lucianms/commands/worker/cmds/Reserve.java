@@ -1,8 +1,8 @@
 package com.lucianms.commands.worker.cmds;
 
+import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.utils.Database;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
@@ -25,8 +25,7 @@ public class Reserve extends BaseCommand {
         if (args.length == 2) {
             String account = args[0].toString();
             String username = args[1].toString();
-            Connection con = Database.getConnection();
-            try {
+            try (Connection con = Discord.getConnection()) {
                 try (PreparedStatement ps = con.prepareStatement("select count(*) as total from characters where name = ?")) {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
@@ -72,25 +71,24 @@ public class Reserve extends BaseCommand {
                 event.getChannel().sendMessage("An error occurred while trying to find that account");
                 return;
             }
-            try {
-                try (PreparedStatement ps = con.prepareStatement("insert into ign_reserves values (?, ?)")) {
-                    ps.setString(1, account);
-                    ps.setString(2, username);
-                    ps.executeUpdate();
-                    createResponse(event)
-                            .appendContent("IGN ")
-                            .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                            .appendContent(" reserved for the user ")
-                            .appendContent(account, MessageBuilder.Styles.INLINE_CODE).build();
-                }
+            try (Connection con = Discord.getConnection();
+                 PreparedStatement ps = con.prepareStatement("insert into ign_reserves values (?, ?)")) {
+                ps.setString(1, account);
+                ps.setString(2, username);
+                ps.executeUpdate();
+                createResponse(event)
+                        .appendContent("IGN ")
+                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
+                        .appendContent(" reserved for the user ")
+                        .appendContent(account, MessageBuilder.Styles.INLINE_CODE).build();
             } catch (SQLException e) {
                 e.printStackTrace();
                 event.getChannel().sendMessage("An error occurred.");
             }
         } else if (args.length == 1) {
-            Connection con = Database.getConnection();
             String username = args[0].toString();
-            try (PreparedStatement ps = con.prepareStatement("select * from ign_reserves where username = ?")) {
+            try (Connection con = Discord.getConnection();
+                 PreparedStatement ps = con.prepareStatement("select * from ign_reserves where username = ?")) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     StringBuilder sb = new StringBuilder();

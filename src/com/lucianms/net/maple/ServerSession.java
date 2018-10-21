@@ -1,17 +1,17 @@
 package com.lucianms.net.maple;
 
-import com.lucianms.net.maple.proto.RawDecoder;
-import com.lucianms.net.maple.proto.RawEncoder;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFactory;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import com.lucianms.net.maple.proto.DirectPacketDecoder;
+import com.lucianms.net.maple.proto.DirectPacketEncoder;
+import com.lucianms.nio.NettyDiscardClient;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author izarooni
@@ -19,33 +19,27 @@ import java.net.InetSocketAddress;
 public class ServerSession {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerSession.class);
-    private static IoSession session = null;
+    private static Channel session = null;
 
     private ServerSession() {
     }
 
-    public static synchronized void connect() {
-        if (session != null) {
-            session.closeNow();
-            session = null;
-        }
-        NioSocketConnector client = new NioSocketConnector();
-        client.setHandler(new SessionHandler());
-        client.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ProtocolCodecFactory() {
-            RawEncoder encoder = new RawEncoder();
-            RawDecoder decoder = new RawDecoder();
-
+    public static void connect() {
+        NettyDiscardClient client = new NettyDiscardClient(
+                "127.0.0.1", 8483,
+                new NioEventLoopGroup(), new SessionHandler(),
+                DirectPacketDecoder.class, DirectPacketEncoder.class);
+        client.run();
+        ChannelFuture connect = client.connect();
+        connect.addListener(new ChannelFutureListener() {
             @Override
-            public ProtocolEncoder getEncoder(IoSession ioSession) throws Exception {
-                return encoder;
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (!future.isSuccess()) {
+                    connect.channel().eventLoop().schedule(() -> client, 5000, TimeUnit.MILLISECONDS);
+                    LOGGER.info("Attempting to reconnect...");
+                }
             }
-
-            @Override
-            public ProtocolDecoder getDecoder(IoSession ioSession) throws Exception {
-                return decoder;
-            }
-        }));
-        client.connect(new InetSocketAddress("localhost", 8483));
+        });
     }
 
     public static void sendPacket(byte[] packet) {
@@ -53,14 +47,14 @@ public class ServerSession {
             LOGGER.error("Currently not connected to the server");
             return;
         }
-        session.write(packet);
+        session.writeAndFlush(packet);
     }
 
-    public static IoSession getSession() {
+    public static Channel getSession() {
         return session;
     }
 
-    public static void setSession(IoSession session) {
+    public static void setSession(Channel session) {
         ServerSession.session = session;
     }
 }

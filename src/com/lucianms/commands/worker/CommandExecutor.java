@@ -23,26 +23,26 @@ public class CommandExecutor {
 
     static {
         // @formatter:off
-        commands.put("warp",         new Warp());
-        commands.put("strip",        new Strip());
-        commands.put("restart",      new Restart());
-        commands.put("setface",      new SetFace());
-        commands.put("sethair",      new SetHair());
-        commands.put("safeshutdown", new SafeShutdown());
-        commands.put("online",       new Online());
-        commands.put("permission",   new Permission());
         commands.put("bind",         new Bind());
-        commands.put("search",       new Search());
         commands.put("connect",      new Connect());
         commands.put("disconnect",   new Disconnect());
-        commands.put("help",         new Help());
-        commands.put("reloadcs",     new ReloadCS());
-        commands.put("getroles",     new GetRoles());
-        commands.put("reserve",      new Reserve());
         commands.put("forbid",       new Forbid());
-        commands.put("pardon",       new Pardon());
+        commands.put("getroles",     new GetRoles());
+        commands.put("help",         new Help());
         commands.put("job",          new Job());
+        commands.put("online",       new Online());
+        commands.put("pardon",       new Pardon());
+        commands.put("permission",   new Permission());
         commands.put("register",     new Register());
+        commands.put("reloadcs",     new ReloadCS());
+        commands.put("reserve",      new Reserve());
+        commands.put("safeshutdown", new SafeShutdown());
+        commands.put("search",       new Search());
+        commands.put("setface",      new SetFace());
+        commands.put("sethair",      new SetHair());
+        commands.put("strip",        new Strip());
+        commands.put("unstuck",      new Unstuck());
+        commands.put("warp",         new Warp());
         // @formatter:on
     }
 

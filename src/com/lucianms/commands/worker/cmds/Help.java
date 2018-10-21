@@ -26,7 +26,9 @@ public class Help extends BaseCommand {
         EmbedBuilder embed = createEmbed().withTitle("Available commands");
         for (BaseCommand base : CommandExecutor.getCommands()) {
             CommandType commandType = base.getCommandType();
-            if (commandType == CommandType.Both || (commandType == CommandType.PrivateMessage && event.getChannel().isPrivate())) {
+            if (commandType == CommandType.Both
+                    || (commandType == CommandType.PrivateMessage && event.getChannel().isPrivate())
+                    || (commandType == CommandType.Public && !event.getChannel().isPrivate())) {
                 if (!base.isPermissionRequired() || canExecute(event, base.getClass().getSimpleName().toLowerCase())) {
                     embed.appendDesc("\r\n**").appendDesc(base.getName()).appendDesc("** - ").appendDesc(base.getDescription());
                 }
