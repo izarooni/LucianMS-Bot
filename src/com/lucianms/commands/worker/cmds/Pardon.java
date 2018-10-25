@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.server.Guild;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
@@ -16,13 +17,14 @@ public class Pardon extends BaseCommand {
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
+        Guild guild = Discord.getGuilds().computeIfAbsent(event.getGuild().getLongID(), l -> new Guild(event.getGuild()));
         Command.CommandArg[] args = command.getArgs();
         if (args.length > 0) {
             for (Command.CommandArg arg : args) {
                 String word = arg.toString();
-                Discord.getBlacklistedWords().removeIf(black -> black.equalsIgnoreCase(word));
+                guild.getBlacklistedWords().removeIf(black -> black.equalsIgnoreCase(word));
             }
-            Discord.updateBlacklistedWords();
+            guild.updateBlacklistedWords();
             createResponse(event).withContent("Word(s) successfully removed from the blacklist!", MessageBuilder.Styles.ITALICS).build();
         } else {
             EmbedBuilder embed = createEmbed()

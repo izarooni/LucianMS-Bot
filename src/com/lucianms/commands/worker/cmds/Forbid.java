@@ -3,10 +3,9 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import com.lucianms.server.Guild;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
 
 public class Forbid extends BaseCommand {
 
@@ -17,18 +16,19 @@ public class Forbid extends BaseCommand {
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
+        Guild guild = Discord.getGuilds().computeIfAbsent(event.getGuild().getLongID(), l -> new Guild(event.getGuild()));
         Command.CommandArg[] args = command.args;
         if (args.length > 0) {
             for (Command.CommandArg arg : args) {
-                Discord.getBlacklistedWords().add(arg.toString());
+                guild.getBlacklistedWords().add(arg.toString());
             }
-            Discord.updateBlacklistedWords();
+            guild.updateBlacklistedWords();
             createResponse(event).withContent("Word(s) successfully blacklisted!").build();
         } else {
             StringBuilder sb = new StringBuilder();
-            Discord.getBlacklistedWords().forEach(w -> sb.append(w).append(" "));
+            guild.getBlacklistedWords().forEach(w -> sb.append(w).append(" "));
             EmbedBuilder embed = createEmbed()
-                    .withTitle("Every forbidden word")
+                    .withTitle("Every forbidden word for this Discord guild")
                     .appendDesc(sb.toString());
             createResponse(event).withEmbed(embed.build()).build();
         }

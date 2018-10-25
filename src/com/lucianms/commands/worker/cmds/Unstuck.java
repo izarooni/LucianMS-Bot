@@ -32,7 +32,7 @@ public class Unstuck extends BaseCommand {
         Command.CommandArg[] args = command.getArgs();
 
         if (args.length == 1) {
-            try (Connection con = Discord.getConnection()) {
+            try (Connection con = Discord.getMapleConnection()) {
                 String username = args[0].toString();
                 int accountID;
                 try (PreparedStatement ps = con.prepareStatement("select id from accounts where discord_id = ?")) {

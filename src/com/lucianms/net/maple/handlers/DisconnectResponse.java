@@ -31,8 +31,10 @@ public class DisconnectResponse extends DiscordResponse {
             IChannel channel = Discord.getBot().getClient().getChannelByID(ID);
             if (disconnectResult == 0) {
                 channel.sendMessage("Successfully disconnected");
+            } else if (disconnectResult == 1) {
+                channel.sendMessage("Unable to find any player");
             } else {
-                channel.sendMessage("Failed to disconnect");
+                channel.sendMessage("An error occurred");
             }
         }
     }

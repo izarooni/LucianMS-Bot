@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,16 +35,20 @@ public class Discord {
     private static final Bot bot = new Bot();
     private static Config config;
     private static ConcurrentHashMap<Long, Guild> guilds = new ConcurrentHashMap<>();
-    private static ArrayList<String> blacklistedWords = new ArrayList<>();
-    private static HikariDataSource hikari = Database.createDataSource("discord");
+    private static HikariDataSource mapleDataSource = Database.createMapleDataSource("maple");
+    private static HikariDataSource discordDataSource = Database.createDiscordDataSource("discord");
 
     private static Process server;
 
     private Discord() {
     }
 
-    public static Connection getConnection() throws SQLException {
-        return hikari.getConnection();
+    public static Connection getMapleConnection() throws SQLException {
+        return mapleDataSource.getConnection();
+    }
+
+    public static Connection getDiscordConnection() throws SQLException {
+        return mapleDataSource.getConnection();
     }
 
     public static Bot getBot() {
@@ -58,10 +61,6 @@ public class Discord {
 
     public static ConcurrentHashMap<Long, Guild> getGuilds() {
         return guilds;
-    }
-
-    public static ArrayList<String> getBlacklistedWords() {
-        return blacklistedWords;
     }
 
     public static Process getServer() {
@@ -84,22 +83,6 @@ public class Discord {
             return;
         }
         try {
-            File file = new File("blacklist.txt");
-            if (!file.exists()) {
-                file.createNewFile();
-                LOGGER.info("Blacklist file created");
-            } else {
-                try (FileInputStream stream = new FileInputStream(file)) {
-                    try (Scanner scanner = new Scanner(stream)) {
-                        String line;
-                        while (scanner.hasNext() && (line = scanner.next()) != null) {
-                            blacklistedWords.add(line);
-                        }
-                    }
-                }
-                LOGGER.info("{} black listed words", blacklistedWords.size());
-            }
-
             config = new Config(new JSONObject(new JSONTokener(new FileInputStream("config.json"))));
             LOGGER.info("Config file loaded");
             Discord.getBot().login();
@@ -113,7 +96,7 @@ public class Discord {
                 }
                 LOGGER.info("Starting launcher{} : '{}'", i, launcher);
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start " + launcher);
-                file = new File(Discord.getConfig().getString("ServerDirectory"));
+                File file = new File(Discord.getConfig().getString("ServerDirectory"));
                 processBuilder.directory(file);
                 if (file.exists()) {
                     Process process = processBuilder.start();
@@ -127,18 +110,6 @@ public class Discord {
 
             LOGGER.info("The server is now starting up!");
         } catch (LoginException | InterruptedException | DiscordException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void updateBlacklistedWords() {
-        try (FileOutputStream fos = new FileOutputStream(new File("blacklist.txt"), false)) {
-            StringBuilder sb = new StringBuilder();
-            blacklistedWords.forEach(w -> sb.append(w).append("\r\n"));
-            sb.setLength(sb.length() - (sb.length() > 0 ? 2 : 0));
-            fos.write(sb.toString().getBytes());
-            fos.flush();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }

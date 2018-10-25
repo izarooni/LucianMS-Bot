@@ -1,17 +1,17 @@
 Manifest-Version: 1.0
-Class-Path: jetty-io-9.4.8.v20171121.jar mysql-connector-java-6.0.6.ja
- r commons-lang3-3.7.jar koloboke-api-jdk8-1.0.0.jar json-20170516.jar
-  websocket-api-9.4.8.v20171121.jar httpclient-4.5.4.jar junit-3.8.2.j
- ar jflac-codec-1.5.2.jar jackson-annotations-2.9.0.jar jackson-module
- -afterburner-2.9.2.jar websocket-common-9.4.8.v20171121.jar emoji-jav
- a-4.0.0.jar jetty-xml-9.4.8.v20171121.jar jetty-client-9.4.8.v2017112
- 1.jar commons-net-3.6.jar tritonus-dsp-0.3.6.jar commons-codec-1.10.j
- ar koloboke-impl-common-jdk8-1.0.0.jar slf4j-simple-1.7.25.jar triton
- us-share-0.3.7.4.jar Discord4J-2.10.1.jar httpmime-4.5.4.jar commons-
- io-2.6.jar httpcore-4.4.8.jar mina-core-2.0.19.jar commons-logging-1.
- 2.jar jackson-core-2.9.2.jar mp3spi-1.9.5.4.jar jlayer-1.0.1.4.jar jn
- a-4.5.0.jar jetty-util-9.4.8.v20171121.jar slf4j-api-1.7.25.jar webso
- cket-client-9.4.8.v20171121.jar jorbis-0.0.17.jar jetty-http-9.4.8.v2
- 0171121.jar jackson-databind-2.9.2.jar typetools-0.5.0.jar
+Class-Path: tritonus-dsp-0.3.6.jar httpclient-4.5.4.jar commons-loggin
+ g-1.2.jar mariadb-java-client-2.3.0.jar mp3spi-1.9.5.4.jar emoji-java
+ -4.0.0.jar httpcore-4.4.8.jar jetty-io-9.4.8.v20171121.jar commons-co
+ dec-1.10.jar websocket-client-9.4.8.v20171121.jar jflac-codec-1.5.2.j
+ ar jorbis-0.0.17.jar jlayer-1.0.1.4.jar jackson-databind-2.9.2.jar ko
+ loboke-api-jdk8-1.0.0.jar typetools-0.5.0.jar junit-3.8.2.jar jetty-h
+ ttp-9.4.8.v20171121.jar Discord4J-2.10.1.jar jackson-core-2.9.2.jar s
+ lf4j-api-1.7.25.jar websocket-common-9.4.8.v20171121.jar jetty-client
+ -9.4.8.v20171121.jar jetty-util-9.4.8.v20171121.jar HikariCP-3.2.0.ja
+ r commons-lang3-3.7.jar koloboke-impl-common-jdk8-1.0.0.jar jackson-a
+ nnotations-2.9.0.jar jna-4.5.0.jar netty-all-4.1.30.Final.jar websock
+ et-api-9.4.8.v20171121.jar tritonus-share-0.3.7.4.jar jackson-module-
+ afterburner-2.9.2.jar slf4j-simple-1.7.25.jar json-20170516.jar commo
+ ns-io-2.6.jar httpmime-4.5.4.jar jetty-xml-9.4.8.v20171121.jar
 Main-Class: com.lucianms.Discord
 

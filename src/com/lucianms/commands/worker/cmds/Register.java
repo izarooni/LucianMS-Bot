@@ -4,7 +4,6 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.utils.Database;
 import com.lucianms.utils.HexUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ public class Register extends BaseCommand {
             }
             if (username.length() >= 4 && username.length() <= 13) {
                 if (password.length() >= 6) {
-                    try (Connection connection = Discord.getConnection()) {
+                    try (Connection connection = Discord.getMapleConnection()) {
                         try (PreparedStatement ps = connection.prepareStatement("select name from accounts where discord_id = ?")) {
                             ps.setLong(1, userID);
                             try (ResultSet rs = ps.executeQuery()) {

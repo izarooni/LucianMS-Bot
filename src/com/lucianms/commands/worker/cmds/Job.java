@@ -40,7 +40,7 @@ public class Job extends BaseCommand {
                 createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid job").build();
                 return;
             }
-            try (Connection con = Discord.getConnection()) {
+            try (Connection con = Discord.getMapleConnection()) {
                 try (PreparedStatement query = con.prepareStatement("select count(*) as total from characters where name = ?")) {
                     query.setString(1, username);
                     try (ResultSet rs = query.executeQuery()) {

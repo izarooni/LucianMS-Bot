@@ -34,7 +34,7 @@ public class Strip extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {
             String username = args[0].toString();
-            try (Connection connection = Discord.getConnection()) {
+            try (Connection connection = Discord.getMapleConnection()) {
                 int playerId; // id of the player
                 int equipSlots; // total slots the player has
                 int equippedItems = 0; // items currently equipped
