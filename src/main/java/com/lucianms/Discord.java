@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.util.DiscordException;
 
-import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -88,7 +87,7 @@ public class Discord {
             TaskExecutor.executeLater(ServerSession::connect, 10000);
 
             LOGGER.info("The server is now starting up!");
-        } catch (LoginException | InterruptedException | DiscordException | IOException e) {
+        } catch (DiscordException | IOException e) {
             e.printStackTrace();
         }
     }

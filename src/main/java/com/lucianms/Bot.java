@@ -12,8 +12,6 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.util.DiscordException;
 
-import javax.security.auth.login.LoginException;
-
 /**
  * @author izarooni
  */
@@ -23,7 +21,7 @@ public class Bot {
 
     private IDiscordClient client;
 
-    void login() throws LoginException, InterruptedException, DiscordException {
+    void login() throws DiscordException {
         ClientBuilder builder = new ClientBuilder().withToken(Discord.getConfig().get("global", "user_token", String.class));
         client = builder.login();
         EventDispatcher dispatcher = client.getDispatcher();

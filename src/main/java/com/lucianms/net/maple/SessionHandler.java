@@ -17,7 +17,7 @@ public class SessionHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        LOGGER.info("Channel registered");
+        LOGGER.info("Channel context registered to inter server");
         ServerSession.setSession(ctx.channel());
     }
 
