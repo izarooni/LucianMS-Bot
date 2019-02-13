@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -20,17 +19,19 @@ public final class Defaults {
     }
 
 
-    public static void createDefault(String path, String fileName) throws IOException {
+    public static boolean tryCreateDefault(String path, String fileName) {
         if (new File(path + fileName).exists()) {
             LOGGER.info("Default file {} in directory {} already exists", fileName, path);
-            return;
+            return false;
         }
 
-        InputStream res = Defaults.class.getResourceAsStream("/" + fileName);
-        if (res == null) {
-            throw new FileNotFoundException("/" + fileName);
+        try (InputStream res = Defaults.class.getResourceAsStream("/" + fileName)) {
+            FileUtils.copyToFile(res, new File(path + fileName));
+            LOGGER.info("Created new default file {} in directory {}", fileName, path);
+            return true;
+        } catch (IOException e) {
+            LOGGER.error("Failed to load resource '{}'", fileName, e);
+            return false;
         }
-        FileUtils.copyToFile(res, new File(path + fileName));
-        LOGGER.info("Created new default file {} in directory {}", fileName, path);
     }
 }

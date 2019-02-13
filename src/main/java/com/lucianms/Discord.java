@@ -68,14 +68,10 @@ public class Discord {
     }
 
     public static void main(String[] args) {
-        File fConfig = new File("config.ini");
-        if (!fConfig.exists()) {
-            try {
-                Defaults.createDefault("", "config.ini");
-                LOGGER.info("Created config file. Make changes and then restart program");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        Defaults.tryCreateDefault("", "discord-db.properties");
+        Defaults.tryCreateDefault("", "maple-db.properties");
+        if (Defaults.tryCreateDefault("", "config.ini")) {
+            LOGGER.info("Created config file. Make changes and then restart program");
             return;
         }
         try {
