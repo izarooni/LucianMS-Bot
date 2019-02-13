@@ -88,24 +88,6 @@ public class Discord {
             Discord.getBot().login();
             LOGGER.info("Discord bot is now online");
 
-            // start the maple server
-            for (int i = 0; ; i++) {
-                String launcher = config.getString("launcher" + i);
-                if (launcher == null) {
-                    break;
-                }
-                LOGGER.info("Starting launcher{} : '{}'", i, launcher);
-                ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/k", "start " + launcher);
-                File file = new File(Discord.getConfig().getString("ServerDirectory"));
-                processBuilder.directory(file);
-                if (file.exists()) {
-                    Process process = processBuilder.start();
-                    Discord.setServer(process);
-                } else {
-                    LOGGER.warn("File does not exist '{}'", file.getAbsolutePath());
-                }
-            }
-
             TaskExecutor.executeLater(ServerSession::connect, 10000);
 
             LOGGER.info("The server is now starting up!");
