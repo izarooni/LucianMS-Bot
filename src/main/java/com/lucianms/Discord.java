@@ -1,28 +1,22 @@
 package com.lucianms;
 
 
-import com.lucianms.io.Config;
 import com.lucianms.io.Defaults;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Guild;
 import com.lucianms.utils.Database;
 import com.zaxxer.hikari.HikariDataSource;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.ini4j.Wini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.util.DiscordException;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,7 +27,7 @@ public class Discord {
     private static final Logger LOGGER = LoggerFactory.getLogger(Discord.class);
 
     private static final Bot bot = new Bot();
-    private static Config config;
+    private static Wini config;
     private static ConcurrentHashMap<Long, Guild> guilds = new ConcurrentHashMap<>();
     private static HikariDataSource mapleDataSource = Database.createMapleDataSource("maple");
     private static HikariDataSource discordDataSource = Database.createDiscordDataSource("discord");
@@ -48,6 +42,9 @@ public class Discord {
     }
 
     public static Connection getDiscordConnection() throws SQLException {
+        if (discordDataSource == null) {
+            discordDataSource = Database.createDiscordDataSource("discord");
+        }
         return discordDataSource.getConnection();
     }
 
@@ -55,7 +52,7 @@ public class Discord {
         return bot;
     }
 
-    public static Config getConfig() {
+    public static Wini getConfig() {
         return config;
     }
 
@@ -72,18 +69,18 @@ public class Discord {
     }
 
     public static void main(String[] args) {
-        File fConfig = new File("config.json");
+        File fConfig = new File("config.ini");
         if (!fConfig.exists()) {
             try {
-                Defaults.createDefault("", "config.json");
+                Defaults.createDefault("", "config.ini");
                 LOGGER.info("Created config file. Make changes and then restart program");
-            } catch (URISyntaxException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return;
         }
         try {
-            config = new Config(new JSONObject(new JSONTokener(new FileInputStream("config.json"))));
+            config = new Wini(new File("config.ini"));
             LOGGER.info("Config file loaded");
             Discord.getBot().login();
             LOGGER.info("Discord bot is now online");

@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 
 /**
  * @author izarooni
@@ -19,12 +19,18 @@ public final class Defaults {
     private Defaults() {
     }
 
-    public static void createDefault(String path, String fileName) throws URISyntaxException, IOException {
+
+    public static void createDefault(String path, String fileName) throws IOException {
         if (new File(path + fileName).exists()) {
             LOGGER.info("Default file {} in directory {} already exists", fileName, path);
             return;
         }
-        FileUtils.copyToFile(new FileInputStream("resources/" + fileName), new File(path + fileName));
+
+        InputStream res = Defaults.class.getResourceAsStream("/" + fileName);
+        if (res == null) {
+            throw new FileNotFoundException("/" + fileName);
+        }
+        FileUtils.copyToFile(res, new File(path + fileName));
         LOGGER.info("Created new default file {} in directory {}", fileName, path);
     }
 }

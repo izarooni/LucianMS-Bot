@@ -40,9 +40,11 @@ public class Guild {
                     }
                     LOGGER.info("Loaded {} forbidden words for guild '{}:{}'", blacklistedWords.size(), guild.getName(), guild.getLongID());
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception ignore) {
+            LOGGER.warn("Failed to establish connection to Discord SQL. Skipping.");
         }
 
         this.permissions.load();
@@ -54,6 +56,9 @@ public class Guild {
             try (PreparedStatement ps = con.prepareStatement("delete from forbidden_words where guild_id = ?")) {
                 ps.setLong(1, guild.getLongID());
                 ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
             }
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("insert into forbidden_words values (?, ?)")) {
@@ -64,10 +69,11 @@ public class Guild {
                 }
                 ps.executeBatch();
                 con.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            con.setAutoCommit(true);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception ignore) {
+            LOGGER.warn("Failed to establish connection to Discord SQL. Skipping.");
         }
     }
 

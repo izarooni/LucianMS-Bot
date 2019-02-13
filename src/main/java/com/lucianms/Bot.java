@@ -24,7 +24,7 @@ public class Bot {
     private IDiscordClient client;
 
     void login() throws LoginException, InterruptedException, DiscordException {
-        ClientBuilder builder = new ClientBuilder().withToken(Discord.getConfig().getString("Token"));
+        ClientBuilder builder = new ClientBuilder().withToken(Discord.getConfig().get("global", "user_token", String.class));
         client = builder.login();
         EventDispatcher dispatcher = client.getDispatcher();
         dispatcher.registerListener(new ChatHandler());

@@ -62,12 +62,12 @@ public class Command {
 
     public static boolean isValidCommand(MessageReceivedEvent event) {
         return event.getMessage().getAuthor().getLongID() != Discord.getBot().getClient().getOurUser().getLongID() // bot mustn't self-execute
-                && event.getMessage().getContent().startsWith(Discord.getConfig().getString("CommandTrigger"));
+                && event.getMessage().getContent().startsWith(Discord.getConfig().get("global", "cmd_prefix", String.class));
     }
 
     public static Command parse(String text) {
         String[] mSplit = text.split(" "); // original message as splits
-        String[] sp = mSplit[0].toLowerCase().split(Discord.getConfig().getString("CommandTrigger"));
+        String[] sp = mSplit[0].toLowerCase().split(Discord.getConfig().get("global", "cmd_prefix", String.class));
         if (sp.length > 0) {
             String name = sp[1]; // the command put lowercase
             String[] args; // n-1 of sp; args of the command

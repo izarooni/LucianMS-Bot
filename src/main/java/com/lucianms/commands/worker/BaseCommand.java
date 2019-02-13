@@ -37,7 +37,8 @@ public abstract class BaseCommand {
     }
 
     public final String getName() {
-        return Discord.getConfig().getString("CommandTrigger") + getClass().getSimpleName().toLowerCase();
+        return Discord.getConfig().get("global", "cmd_prefix", String.class)
+                + getClass().getSimpleName().toLowerCase();
     }
 
     public abstract String getDescription();
@@ -59,7 +60,7 @@ public abstract class BaseCommand {
         IGuild ig = event.getChannel().getGuild();
         IUser iu = event.getAuthor();
 
-        if (iu.getLongID() == Discord.getConfig().getLong("OwnerID")) {
+        if (iu.getStringID().equals(Discord.getConfig().get("global", "owner_id", String.class))) {
             return true;
         }
 
