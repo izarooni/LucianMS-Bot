@@ -43,6 +43,7 @@ public class CommandExecutor {
         commands.put("strip",        new Strip());
         commands.put("unstuck",      new Unstuck());
         commands.put("warp",         new Warp());
+        commands.put("sql",          new Sql());
         // @formatter:on
     }
 

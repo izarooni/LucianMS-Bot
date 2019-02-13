@@ -48,7 +48,7 @@ public class Discord {
     }
 
     public static Connection getDiscordConnection() throws SQLException {
-        return mapleDataSource.getConnection();
+        return discordDataSource.getConnection();
     }
 
     public static Bot getBot() {

@@ -11,7 +11,8 @@ public class DiscordResponseManager {
 
     static {
         responses = new DiscordResponse[Headers.values().length];
-        responses[Headers.Shutdown.value] = new ServerShutdown();
+        responses[Headers.MessageChannel.value] = new MessageChannel();
+//        responses[Headers.Shutdown.value] = new ServerShutdown();
         responses[Headers.SetFace.value] = new FaceChangeResponse();
         responses[Headers.SetHair.value] = new HairChangeResponse();
         responses[Headers.Online.value] = new OnlineResponse();

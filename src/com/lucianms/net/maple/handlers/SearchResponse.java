@@ -16,7 +16,7 @@ public class SearchResponse extends DiscordResponse {
 
         IChannel channel = Discord.getBot().getClient().getChannelByID(channelID);
 
-        if (count == -1) {
+        if (count < 0) {
             channel.sendMessage(reader.readMapleAsciiString());
         } else {
             MessageBuilder mb = new MessageBuilder(Discord.getBot().getClient()).withChannel(channel);
