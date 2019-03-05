@@ -3,6 +3,7 @@ package com.lucianms.net.maple;
 import com.lucianms.net.maple.proto.DirectPacketDecoder;
 import com.lucianms.net.maple.proto.DirectPacketEncoder;
 import com.lucianms.nio.NettyDiscardClient;
+import com.lucianms.utils.Promise;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -24,7 +25,7 @@ public class ServerSession {
     private ServerSession() {
     }
 
-    public static void connect() {
+    public static void connect(Promise promise) {
         NettyDiscardClient client = new NettyDiscardClient(
                 "127.0.0.1", 8483,
                 new NioEventLoopGroup(), new SessionHandler(),
@@ -37,6 +38,13 @@ public class ServerSession {
                 if (!future.isSuccess()) {
                     connect.channel().eventLoop().schedule(() -> client, 5000, TimeUnit.MILLISECONDS);
                     LOGGER.info("Attempting to reconnect...");
+                    if (promise != null) {
+                        promise.fail();
+                    }
+                } else {
+                    if (promise != null) {
+                        promise.success();
+                    }
                 }
             }
         });
