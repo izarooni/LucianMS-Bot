@@ -8,12 +8,21 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * @author izarooni
  */
 public class SessionHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionHandler.class);
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (!(cause instanceof IOException)) {
+            cause.printStackTrace();
+        }
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
