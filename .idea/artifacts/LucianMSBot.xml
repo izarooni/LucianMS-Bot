@@ -7,8 +7,6 @@
       </element>
       <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-client:9.4.8.v20171121" />
       <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-io:9.4.8.v20171121" />
-      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.14" />
-      <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.6.1" />
       <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpmime:4.5.4" />
       <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.25" />
       <element id="library" level="project" name="Maven: org.jflac:jflac-codec:1.5.2" />
@@ -45,6 +43,7 @@
       <element id="library" level="project" name="Maven: com.googlecode.soundlibs:mp3spi:1.9.5.4" />
       <element id="library" level="project" name="Maven: com.vdurmont:emoji-java:4.0.0" />
       <element id="library" level="project" name="Maven: com.googlecode.soundlibs:tritonus-share:0.3.7.4" />
+      <element id="library" level="project" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.3.0" />
     </root>
   </artifact>
 </component>

@@ -41,9 +41,6 @@ public class Discord {
     }
 
     public static Connection getDiscordConnection() throws SQLException {
-        if (discordDataSource == null) {
-            discordDataSource = Database.createDiscordDataSource("discord");
-        }
         return discordDataSource.getConnection();
     }
 
