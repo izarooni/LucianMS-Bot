@@ -51,16 +51,18 @@ public class GuildTicketList extends HashMap<Long, GuildTicket> implements Savea
     @Override
     public boolean load(Guild guild) {
         try (Connection con = Discord.getDiscordConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("select * from tickets where guild_id = ? and ticket_state = 0 order by ticket_id asc")) {
+            try (PreparedStatement ps = con.prepareStatement("select * from tickets where guild_id = ? order by ticket_id asc")) {
                 ps.setLong(1, guild.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     int lastTicketUID = 0;
                     while (rs.next()) {
                         int ticketID = lastTicketUID = rs.getInt("ticket_id");
-                        long userID = rs.getLong("user_id");
-                        long creationMessageID = rs.getLong("creation_message_id");
-                        long destinationMessageID = rs.getLong("destination_message_id");
-                        put(destinationMessageID, new GuildTicket(ticketID, userID, destinationMessageID, creationMessageID));
+                        if (rs.getInt("ticket_state") == 0) {
+                            long userID = rs.getLong("user_id");
+                            long creationMessageID = rs.getLong("creation_message_id");
+                            long destinationMessageID = rs.getLong("destination_message_id");
+                            put(destinationMessageID, new GuildTicket(ticketID, userID, destinationMessageID, creationMessageID));
+                        }
                     }
                     ticketUID.set(lastTicketUID + 1);
                 }
