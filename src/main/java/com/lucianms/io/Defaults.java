@@ -21,13 +21,13 @@ public final class Defaults {
 
     public static boolean tryCreateDefault(String path, String fileName) {
         if (new File(path + fileName).exists()) {
-            LOGGER.info("Default file {} in directory {} already exists", fileName, path);
+            LOGGER.info("Default file {}{} already exists", path, fileName);
             return false;
         }
 
         try (InputStream res = Defaults.class.getResourceAsStream("/" + fileName)) {
             FileUtils.copyToFile(res, new File(path + fileName));
-            LOGGER.info("Created new default file {} in directory {}", fileName, path);
+            LOGGER.info("Created new default file {}{}", path, fileName);
             return true;
         } catch (IOException e) {
             LOGGER.error("Failed to load resource '{}'", fileName, e);

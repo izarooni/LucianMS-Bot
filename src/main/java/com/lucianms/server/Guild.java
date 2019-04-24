@@ -1,6 +1,5 @@
 package com.lucianms.server;
 
-import com.lucianms.Discord;
 import com.lucianms.server.user.User;
 import com.lucianms.utils.Permissions;
 import org.slf4j.Logger;
@@ -8,11 +7,6 @@ import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,61 +18,28 @@ public class Guild {
 
     private final IGuild guild;
     private final Permissions permissions;
-    private ConcurrentHashMap<Long, User> users = new ConcurrentHashMap<>();
-    private ArrayList<String> blacklistedWords = new ArrayList<>();
+    private final GuildConfig guildConfig;
+    private final GuildTicketList tickets;
+    private final ConcurrentHashMap<Long, User> users = new ConcurrentHashMap<>();
 
     public Guild(IGuild guild) {
         this.guild = guild;
         this.permissions = new Permissions(guild);
 
-        try (Connection con = Discord.getDiscordConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("select word from forbidden_words where guild_id = ?")) {
-                ps.setLong(1, guild.getLongID());
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        blacklistedWords.add(rs.getString("word"));
-                    }
-                    LOGGER.info("Loaded {} forbidden words for guild '{}:{}'", blacklistedWords.size(), guild.getName(), guild.getLongID());
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception ignore) {
-            LOGGER.warn("Failed to establish connection to Discord SQL. Skipping.");
-        }
+        guildConfig = new GuildConfig();
+        tickets = new GuildTicketList();
+
+        guildConfig.load(this);
+        guildConfig.getWordBlackList().load(this);
+        tickets.load(this);
 
         this.permissions.load();
-        LOGGER.info("Loaded permissions for guild {} {}", guild.getName(), guild.getLongID());
+        LOGGER.info("Loaded permissions for guild {}", guild.toString());
     }
 
-    public void updateBlacklistedWords() {
-        try (Connection con = Discord.getDiscordConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("delete from forbidden_words where guild_id = ?")) {
-                ps.setLong(1, guild.getLongID());
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return;
-            }
-            con.setAutoCommit(false);
-            try (PreparedStatement ps = con.prepareStatement("insert into forbidden_words values (?, ?)")) {
-                ps.setLong(1, guild.getLongID());
-                for (String word : blacklistedWords) {
-                    ps.setString(2, word);
-                    ps.addBatch();
-                }
-                ps.executeBatch();
-                con.commit();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception ignore) {
-            LOGGER.warn("Failed to establish connection to Discord SQL. Skipping.");
-        }
-    }
-
-    public ArrayList<String> getBlacklistedWords() {
-        return blacklistedWords;
+    @Override
+    public String toString() {
+        return String.format("Guild{name=%s, ID=%s}", guild.getName(), guild.getStringID());
     }
 
     public IGuild getGuild() {
@@ -87,6 +48,18 @@ public class Guild {
 
     public long getId() {
         return guild.getLongID();
+    }
+
+    public Permissions getPermissions() {
+        return permissions;
+    }
+
+    public GuildConfig getGuildConfig() {
+        return guildConfig;
+    }
+
+    public GuildTicketList getTickets() {
+        return tickets;
     }
 
     public User getUser(long id) {
@@ -104,9 +77,5 @@ public class Guild {
 
     public User removeUser(long id) {
         return users.remove(id);
-    }
-
-    public Permissions getPermissions() {
-        return permissions;
     }
 }

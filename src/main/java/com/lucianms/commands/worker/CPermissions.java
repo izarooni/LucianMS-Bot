@@ -20,5 +20,7 @@ public enum CPermissions {
     Reserve,
     Job,
     Forbid,
-    Pardon
+    Pardon,
+    Ticket,
+    Set
 }

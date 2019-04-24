@@ -7,6 +7,7 @@ import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Guild;
 import com.lucianms.utils.Database;
 import com.zaxxer.hikari.HikariDataSource;
+import org.flywaydb.core.Flyway;
 import org.ini4j.Wini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,16 @@ public class Discord {
     private static final Bot bot = new Bot();
     private static Wini config;
     private static ConcurrentHashMap<Long, Guild> guilds = new ConcurrentHashMap<>();
-    private static HikariDataSource mapleDataSource = Database.createMapleDataSource("maple");
-    private static HikariDataSource discordDataSource = Database.createDiscordDataSource("discord");
+    private static HikariDataSource mapleDataSource;
+    private static HikariDataSource discordDataSource;
 
     private static Process server;
 
     private Discord() {
+    }
+
+    public static Wini loadConfiguration() throws IOException {
+        return new Wini(new File("config.ini"));
     }
 
     public static Connection getMapleConnection() throws SQLException {
@@ -52,6 +57,10 @@ public class Discord {
         return config;
     }
 
+    public static void setConfig(Wini config) {
+        Discord.config = config;
+    }
+
     public static ConcurrentHashMap<Long, Guild> getGuilds() {
         return guilds;
     }
@@ -65,15 +74,31 @@ public class Discord {
     }
 
     public static void main(String[] args) {
-        Defaults.tryCreateDefault("", "discord-db.properties");
-        Defaults.tryCreateDefault("", "maple-db.properties");
         if (Defaults.tryCreateDefault("", "config.ini")) {
             LOGGER.info("Created config file. Make changes and then restart program");
             return;
         }
         try {
-            config = new Wini(new File("config.ini"));
+            config = loadConfiguration();
             LOGGER.info("Config file loaded");
+
+            mapleDataSource = Database.createDataSource(config.get("database"), "lucian_new");
+            discordDataSource = Database.createDataSource(config.get("database"), "discord");
+            Flyway flyway = Flyway.configure().dataSource(discordDataSource).schemas(discordDataSource.getSchema()).load();
+            flyway.repair();
+            flyway.migrate();
+
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Guild guild : Discord.getGuilds().values()) {
+                        guild.getGuildConfig().save(guild);
+                        guild.getTickets().save(guild);
+                        LOGGER.info("Saving guild {}", guild.toString());
+                    }
+                }
+            }, "Shutdown_Hook"));
+
             Discord.getBot().login();
             LOGGER.info("Discord bot is now online");
 

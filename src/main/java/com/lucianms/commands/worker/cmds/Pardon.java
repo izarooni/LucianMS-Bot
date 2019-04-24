@@ -22,9 +22,9 @@ public class Pardon extends BaseCommand {
         if (args.length > 0) {
             for (Command.CommandArg arg : args) {
                 String word = arg.toString();
-                guild.getBlacklistedWords().removeIf(black -> black.equalsIgnoreCase(word));
+                guild.getGuildConfig().getWordBlackList().removeIf(black -> black.equalsIgnoreCase(word));
             }
-            guild.updateBlacklistedWords();
+            guild.getGuildConfig().getWordBlackList().save(guild);
             createResponse(event).withContent("Word(s) successfully removed from the blacklist!", MessageBuilder.Styles.ITALICS).build();
         } else {
             EmbedBuilder embed = createEmbed()

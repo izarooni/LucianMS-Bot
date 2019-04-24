@@ -44,6 +44,8 @@ public class CommandExecutor {
         commands.put("unstuck",      new Unstuck());
         commands.put("warp",         new Warp());
         commands.put("sql",          new Sql());
+        commands.put("ticket",       new Ticket());
+        commands.put("set",          new Set());
         // @formatter:on
     }
 

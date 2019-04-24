@@ -11,8 +11,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 
 /**
  * @author izarooni
@@ -35,13 +33,7 @@ public class ServerSession {
         connect.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                if (!future.isSuccess()) {
-                    connect.channel().eventLoop().schedule(() -> client, 5000, TimeUnit.MILLISECONDS);
-                    LOGGER.info("Attempting to reconnect...");
-                    if (promise != null) {
-                        promise.fail();
-                    }
-                } else {
+                if (future.isSuccess()) {
                     if (promise != null) {
                         promise.success();
                     }
