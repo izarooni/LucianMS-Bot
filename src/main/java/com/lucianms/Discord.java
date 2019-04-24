@@ -8,6 +8,7 @@ import com.lucianms.server.Guild;
 import com.lucianms.utils.Database;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
+import org.ini4j.Profile;
 import org.ini4j.Wini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,8 +83,9 @@ public class Discord {
             config = loadConfiguration();
             LOGGER.info("Config file loaded");
 
-            mapleDataSource = Database.createDataSource(config.get("database"), "lucian_new");
-            discordDataSource = Database.createDataSource(config.get("database"), "discord");
+            Profile.Section databaseSection = config.get("database");
+            mapleDataSource = Database.createDataSource(databaseSection, databaseSection.get("maple_schema"));
+            discordDataSource = Database.createDataSource(databaseSection, databaseSection.get("discord_schema"));
             Flyway flyway = Flyway.configure().dataSource(discordDataSource).schemas(discordDataSource.getSchema()).load();
             flyway.repair();
             flyway.migrate();

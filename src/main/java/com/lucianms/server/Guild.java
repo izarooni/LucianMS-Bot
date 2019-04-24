@@ -34,7 +34,7 @@ public class Guild {
         tickets.load(this);
 
         this.permissions.load();
-        LOGGER.info("Loaded permissions for guild {}", guild.toString());
+        LOGGER.info("Loaded permissions for guild {}", toString());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Guild {
 
     public User addUser(IUser user) {
         if (users.containsKey(user.getLongID())) {
-            LOGGER.warn("User '{}' {} already exists in guild '{}' {}", user.getName(), user.getLongID(), guild.getName(), guild.getLongID());
+            LOGGER.warn("User '{}' {} already exists in guild {}", user.getName(), user.getLongID(), toString());
         }
         User ret = new User(user);
         users.put(user.getLongID(), ret);
