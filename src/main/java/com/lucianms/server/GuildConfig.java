@@ -42,7 +42,7 @@ public class GuildConfig implements Saveable<Guild> {
             ps.setString(4, propertyValue);
             ps.executeUpdate();
         } catch (SQLException e) {
-            getLogger().error("Failed to save property {} for guild {}", propertyKey, guild.toString(), e);
+            getLogger().error("Failed to save property {} for {}", propertyKey, guild.toString(), e);
         }
     }
 
@@ -67,7 +67,7 @@ public class GuildConfig implements Saveable<Guild> {
                     return true;
                 }
             } catch (SQLException e) {
-                getLogger().error("Failed to load configuration for guild {}", guild.toString(), e);
+                getLogger().error("Failed to load configuration for {}", guild.toString(), e);
             }
         } catch (SQLException e) {
             getLogger().warn("Failed to establish connection to Discord SQL");

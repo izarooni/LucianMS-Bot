@@ -53,11 +53,11 @@ public class GuildWordBlackList extends ArrayList<String> implements Saveable<Gu
                     while (rs.next()) {
                         add(rs.getString("word"));
                     }
-                    getLogger().info("Loaded {} forbidden words for guild {}", size(), guild.toString());
+                    getLogger().info("Loaded {} forbidden words for {}", size(), guild.toString());
                     return true;
                 }
             } catch (SQLException e) {
-                getLogger().error("Failed to load forbidden words for guild {}", guild.toString(), e);
+                getLogger().error("Failed to load forbidden words for {}", guild.toString(), e);
             }
         } catch (Exception ignore) {
             getLogger().error("Failed to establish connection to Discord SQL");

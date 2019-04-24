@@ -65,7 +65,7 @@ public class GuildTicketList extends HashMap<Long, GuildTicket> implements Savea
                     ticketUID.set(lastTicketUID + 1);
                 }
             } catch (SQLException e) {
-                getLogger().error("Failed to load tickets for guild {}", guild.toString(), e);
+                getLogger().error("Failed to load tickets for {}", guild.toString(), e);
             }
             return true;
         } catch (SQLException e) {

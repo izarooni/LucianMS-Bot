@@ -27,7 +27,7 @@ public class ChatHandler {
         IGuild guild = event.getGuild();
         Guild lGuild = Discord.getGuilds().computeIfAbsent(guild.getLongID(), l -> new Guild(guild));
         GuildTicket ticket = lGuild.getTickets().get(event.getMessageID());
-        if (ticket != null) {
+        if (ticket != null && !ticket.isCompleted()) {
             IChannel creationChannel = guild.getChannelByID(Long.parseLong(lGuild.getGuildConfig().getCIDTicketCreation()));
             EmbedObject build = new EmbedBuilder().withColor(26, 188, 60)
                     .withTitle(String.format("Ticket #%04d", ticket.getTicketID()))
