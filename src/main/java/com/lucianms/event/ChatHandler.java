@@ -16,6 +16,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.EmbedBuilder;
+import sx.blah.discord.util.RequestBuffer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +92,13 @@ public class ChatHandler {
         // increment the status and ask the nex question if available
         user.setApplicationStatus(user.getApplicationStatus() + 1);
         if (user.getApplicationStatus() < Apply.Questions.length) {
-            event.getChannel().sendMessage(Apply.Questions[user.getApplicationStatus()]);
+            final int applicationStatus = user.getApplicationStatus();
+            RequestBuffer.request(new RequestBuffer.IVoidRequest() {
+                @Override
+                public void doRequest() {
+                    event.getChannel().sendMessage(Apply.Questions[applicationStatus]);
+                }
+            });
         }
 
         int status = user.getApplicationStatus() - Apply.Questions.length;
@@ -108,6 +115,12 @@ public class ChatHandler {
                 embeder.withTitle("GM Application submission");
                 embeder.withFooterText(String.format("%s#%s / %s", dUser.getName(), dUser.getDiscriminator(), dUser.getLongID()));
                 applications.sendMessage(embeder.build());
+
+                user.setApplicationGuildID(0);
+                user.setApplicationStatus(0);
+                user.setApplicationResponses(null);
+                user.setApplicationEditMode(false);
+                Discord.getUserHandles().remove(user.getUser().getLongID());
             } else {
                 try {
                     // ask the specified question for a new response
