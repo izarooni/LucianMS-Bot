@@ -2,6 +2,7 @@ package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.server.Guild;
 import com.lucianms.server.GuildTicket;
@@ -14,7 +15,7 @@ import sx.blah.discord.handle.obj.IUser;
 public class Ticket extends BaseCommand {
 
     public Ticket() {
-        super(false);
+        super(false, CommandType.Both);
     }
 
     @Override
