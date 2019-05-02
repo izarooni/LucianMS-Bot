@@ -50,7 +50,7 @@ public class Set extends BaseCommand {
         if ("destination".equals(command.args[1].toString())) {
             guild.getGuildConfig().setCIDApplicationDestination(channelID);
             guild.getGuildConfig().save(guild);
-            event.getMessage().reply(String.format("Ticket destination has been set to <#%s>", channelID));
+            event.getMessage().reply(String.format("Applications destination has been set to <#%s>", channelID));
         } else {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
