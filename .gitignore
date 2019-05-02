@@ -1,0 +1,7 @@
+#project files
+/target
+
+#resource files
+/permissions
+/config.ini
+/start.bat
