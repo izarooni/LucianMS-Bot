@@ -133,8 +133,9 @@ public class ChatHandler {
                     for (int i = 0; i < Apply.Questions.length; i++) {
                         embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
                     }
-                    event.getChannel().sendMessage("Before I send this to the Chirithy staff, are you sure you would like to use these responses?\r\n"
-                            + "To edit a response, reply with the number associated to a question you would like to edit", embeder.build());
+                    event.getChannel().sendMessage("Before I send this to the Chirithy staff, are you sure you would like to use these responses?"
+                            + "\r\nTo edit a response, reply with the number associated to a question you would like to edit"
+                            + "\r\nIf you are content with your responses, type `yes` to submit this application", embeder.build());
                 }
             }
         }
