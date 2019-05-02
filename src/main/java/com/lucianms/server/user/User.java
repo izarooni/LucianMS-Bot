@@ -15,6 +15,11 @@ public class User {
     private final IUser user;
     private final Permissions permissions;
 
+    private long applicationGuildID;
+    private boolean applicationEditMode;
+    private int applicationStatus;
+    private String[] applicationResponses;
+
     public User(IUser user) {
         this.user = user;
         this.permissions = new Permissions(user);
@@ -29,5 +34,37 @@ public class User {
 
     public Permissions getPermissions() {
         return permissions;
+    }
+
+    public long getApplicationGuildID() {
+        return applicationGuildID;
+    }
+
+    public void setApplicationGuildID(long applicationGuildID) {
+        this.applicationGuildID = applicationGuildID;
+    }
+
+    public boolean isApplicationEditMode() {
+        return applicationEditMode;
+    }
+
+    public void setApplicationEditMode(boolean applicationEditMode) {
+        this.applicationEditMode = applicationEditMode;
+    }
+
+    public int getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(int applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
+    public String[] getApplicationResponses() {
+        return applicationResponses;
+    }
+
+    public void setApplicationResponses(String[] applicationResponses) {
+        this.applicationResponses = applicationResponses;
     }
 }

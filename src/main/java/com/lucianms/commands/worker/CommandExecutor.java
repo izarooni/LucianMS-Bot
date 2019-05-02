@@ -46,6 +46,7 @@ public class CommandExecutor {
         commands.put("sql",          new Sql());
         commands.put("ticket",       new Ticket());
         commands.put("set",          new Set());
+        commands.put("apply",        new Apply());
         // @formatter:on
     }
 

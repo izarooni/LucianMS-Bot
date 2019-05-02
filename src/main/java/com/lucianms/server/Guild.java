@@ -78,4 +78,8 @@ public class Guild {
     public User removeUser(long id) {
         return users.remove(id);
     }
+
+    public User addUserIfAbsent(IUser user) {
+        return users.putIfAbsent(user.getLongID(), new User(user));
+    }
 }

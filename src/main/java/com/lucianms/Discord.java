@@ -5,6 +5,7 @@ import com.lucianms.io.Defaults;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.server.Guild;
+import com.lucianms.server.user.User;
 import com.lucianms.utils.Database;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
@@ -30,6 +31,7 @@ public class Discord {
     private static final Bot bot = new Bot();
     private static Wini config;
     private static ConcurrentHashMap<Long, Guild> guilds = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long, User> userHandles = new ConcurrentHashMap<>();
     private static HikariDataSource mapleDataSource;
     private static HikariDataSource discordDataSource;
 
@@ -64,6 +66,10 @@ public class Discord {
 
     public static ConcurrentHashMap<Long, Guild> getGuilds() {
         return guilds;
+    }
+
+    public static ConcurrentHashMap<Long, User> getUserHandles() {
+        return userHandles;
     }
 
     public static Process getServer() {

@@ -22,5 +22,6 @@ public enum CPermissions {
     Forbid,
     Pardon,
     Ticket,
-    Set
+    Set,
+    Apply
 }

@@ -27,9 +27,36 @@ public class Set extends BaseCommand {
             return;
         }
         switch (command.args[0].toString()) {
+            case "apps":
+                manageApplicationSystem(event, command);
+                break;
             case "ticket":
                 manageTicketSystem(event, command);
                 break;
+        }
+    }
+
+    private void manageApplicationSystem(MessageReceivedEvent event, Command command) {
+        Guild guild = Discord.getGuilds().get(event.getGuild().getLongID());
+        if (command.args.length != 3) {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", CmdTicketDescription, false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <destination> <channel ID>`");
+            createResponse(event).withEmbed(embed.build()).build();
+            return;
+        }
+        String channelID = command.args[2].toString();
+        if ("destination".equals(command.args[1].toString())) {
+            guild.getGuildConfig().setCIDApplicationDestination(channelID);
+            guild.getGuildConfig().save(guild);
+            event.getMessage().reply(String.format("Ticket destination has been set to <#%s>", channelID));
+        } else {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", CmdTicketDescription, false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <creation/destination> <channel ID>`");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 

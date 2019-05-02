@@ -12,12 +12,16 @@ public class GuildConfig implements Saveable<Guild> {
 
     private static final String TicketCreationKey = "cid_ticket_creation";
     private static final String TicketDestinationKey = "cid_ticket_destination";
+    private static final String ApplicationDestinationKey = "cid_app_destination";
 
     private final GuildWordBlackList wordBlackList;
     private String CIDTicketCreation, CIDTicketDestination;
+    private String CIDApplicationDestination;
 
     GuildConfig() {
         wordBlackList = new GuildWordBlackList();
+
+        CIDApplicationDestination = "";
         CIDTicketCreation = "";
         CIDTicketDestination = "";
     }
@@ -25,8 +29,11 @@ public class GuildConfig implements Saveable<Guild> {
     @Override
     public boolean save(Guild guild) {
         try (Connection con = Discord.getDiscordConnection()) {
+            con.setAutoCommit(false);
             saveGuildProperty(guild, con, TicketDestinationKey, CIDTicketDestination);
             saveGuildProperty(guild, con, TicketCreationKey, CIDTicketCreation);
+            saveGuildProperty(guild, con, ApplicationDestinationKey, CIDApplicationDestination);
+            con.setAutoCommit(true);
             return true;
         } catch (SQLException e) {
             getLogger().warn("Failed to establish connection to Discord SQL", e);
@@ -56,6 +63,9 @@ public class GuildConfig implements Saveable<Guild> {
                         String property_key = rs.getString("property_key");
                         String property_value = rs.getString("property_value");
                         switch (property_key) {
+                            case ApplicationDestinationKey:
+                                setCIDApplicationDestination(property_value);
+                                break;
                             case TicketCreationKey:
                                 setCIDTicketCreation(property_value);
                                 break;
@@ -77,6 +87,14 @@ public class GuildConfig implements Saveable<Guild> {
 
     public GuildWordBlackList getWordBlackList() {
         return wordBlackList;
+    }
+
+    public String getCIDApplicationDestination() {
+        return CIDApplicationDestination;
+    }
+
+    public void setCIDApplicationDestination(String CIDApplicationDestination) {
+        this.CIDApplicationDestination = CIDApplicationDestination;
     }
 
     public String getCIDTicketCreation() {

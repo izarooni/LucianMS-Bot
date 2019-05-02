@@ -3,14 +3,17 @@ package com.lucianms.event;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.CommandExecutor;
+import com.lucianms.commands.worker.cmds.Apply;
 import com.lucianms.server.Guild;
 import com.lucianms.server.GuildTicket;
+import com.lucianms.server.user.User;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.EmbedBuilder;
 
@@ -44,6 +47,7 @@ public class ChatHandler {
         String content = event.getMessage().getContent();
         if (!event.getChannel().isPrivate()) {
             Guild lGuild = Discord.getGuilds().computeIfAbsent(guild.getLongID(), l -> new Guild(guild));
+            lGuild.addUserIfAbsent(event.getAuthor());
             if (event.getAuthor().getRolesForGuild(guild).stream().noneMatch(r -> r.getPermissions().contains(Permissions.MANAGE_MESSAGES))) {
                 for (String words : lGuild.getGuildConfig().getWordBlackList()) {
                     Pattern pattern = Pattern.compile(words, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
@@ -54,9 +58,76 @@ public class ChatHandler {
                     }
                 }
             }
+        } else {
+            User user = Discord.getUserHandles().get(event.getAuthor().getLongID());
+            if (user != null) {
+                if (user.getApplicationResponses() != null) {
+                    onApplicationResponse(user, event);
+                    return;
+                }
+            }
         }
         if (Command.isValidCommand(event)) {
             CommandExecutor.execute(event);
         }
+    }
+
+    private void onApplicationResponse(User user, MessageReceivedEvent event) {
+        String content = event.getMessage().getContent();
+        if (content.equalsIgnoreCase("cancel")) {
+            event.getChannel().sendMessage("You have cancelled the application");
+            user.setApplicationResponses(null);
+            return;
+        }
+        // ask a question assigned to the current status
+        if (user.getApplicationStatus() < Apply.Questions.length) {
+            user.getApplicationResponses()[user.getApplicationStatus()] = content;
+            if (user.isApplicationEditMode()) {
+                user.setApplicationEditMode(false);
+                user.setApplicationStatus(Apply.Questions.length - 1);
+            }
+        }
+
+        // increment the status and ask the nex question if available
+        user.setApplicationStatus(user.getApplicationStatus() + 1);
+        if (user.getApplicationStatus() < Apply.Questions.length) {
+            event.getChannel().sendMessage(Apply.Questions[user.getApplicationStatus()]);
+        }
+
+        int status = user.getApplicationStatus() - Apply.Questions.length;
+        if (status > 0) {
+            if (content.equalsIgnoreCase("yes")) {
+                event.getChannel().sendMessage("Submitting your application now! Good luck~");
+                Guild guild = Discord.getGuilds().get(user.getApplicationGuildID());
+                IChannel applications = Discord.getBot().getClient().getChannelByID(Long.parseLong(guild.getGuildConfig().getCIDApplicationDestination()));
+                EmbedBuilder embeder = createEmbed();
+                for (int i = 0; i < Apply.Questions.length; i++) {
+                    embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+                }
+                IUser dUser = user.getUser();
+                embeder.withTitle("GM Application submission");
+                embeder.withFooterText(String.format("%s#%s / %s", dUser.getName(), dUser.getDiscriminator(), dUser.getLongID()));
+                applications.sendMessage(embeder.build());
+            } else {
+                try {
+                    // ask the specified question for a new response
+                    int responseID = Integer.parseInt(content);
+                    user.setApplicationStatus(responseID - 1);
+                    event.getChannel().sendMessage(Apply.Questions[responseID - 1]);
+                    user.setApplicationEditMode(true);
+                } catch (NumberFormatException ignore) {
+                    EmbedBuilder embeder = createEmbed();
+                    for (int i = 0; i < Apply.Questions.length; i++) {
+                        embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+                    }
+                    event.getChannel().sendMessage("Before I send this to the Chirithy staff, are you sure you would like to use these responses?\r\n"
+                            + "To edit a response, reply with the number associated to a question you would like to edit", embeder.build());
+                }
+            }
+        }
+    }
+
+    private EmbedBuilder createEmbed() {
+        return new EmbedBuilder().withColor(26, 188, 156);
     }
 }
