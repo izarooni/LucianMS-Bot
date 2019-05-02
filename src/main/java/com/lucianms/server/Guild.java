@@ -66,20 +66,18 @@ public class Guild {
         return users.get(id);
     }
 
-    public User addUser(IUser user) {
-        if (users.containsKey(user.getLongID())) {
-            LOGGER.warn("User '{}' {} already exists in {}", user.getName(), user.getLongID(), toString());
-        }
-        User ret = new User(user);
-        users.put(user.getLongID(), ret);
-        return ret;
-    }
-
     public User removeUser(long id) {
         return users.remove(id);
     }
 
     public User addUserIfAbsent(IUser user) {
-        return users.putIfAbsent(user.getLongID(), new User(user));
+        User uhh = users.get(user.getLongID());
+        if (uhh == null) {
+            // putIfAbsent is creation an object of User
+            // thus loading permission's for every time this method is called
+            // to my future self, leave this be
+            users.put(user.getLongID(), new User(user));
+        }
+        return uhh;
     }
 }

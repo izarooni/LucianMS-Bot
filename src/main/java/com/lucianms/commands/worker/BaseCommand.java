@@ -65,10 +65,7 @@ public abstract class BaseCommand {
         }
 
         Guild guild = Discord.getGuilds().get(ig.getLongID());
-        User user = guild.getUser(event.getAuthor().getLongID());
-        if (user == null) {
-            user = guild.addUser(iu);
-        }
+        User user = guild.addUserIfAbsent(event.getAuthor());
         for (IRole role : event.getAuthor().getRolesForGuild(ig)) {
             if (guild.getPermissions().contains(role.getLongID(), permission)) {
                 return true;

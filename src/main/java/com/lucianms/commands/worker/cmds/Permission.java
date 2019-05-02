@@ -65,10 +65,7 @@ public class Permission extends BaseCommand {
                 }
             } else if (guild.getGuild().getUserByID(ID) != null) {
                 IUser iu = guild.getGuild().getUserByID(ID);
-                User target = guild.getUser(iu.getLongID());
-                if (target == null) {
-                    target = guild.addUser(iu);
-                }
+                User target = guild.addUserIfAbsent(iu);
                 if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
                     if (permission.equals("*")) {
                         for (CPermissions cperms : CPermissions.values()) {

@@ -17,8 +17,7 @@ public class OnlineResponse extends DiscordResponse {
         IChannel channel = Discord.getBot().getClient().getChannelByID(channelId);
 
         MessageBuilder mb = new MessageBuilder(Discord.getBot().getClient()).withChannel(channel);
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.withColor(52, 152, 219).withTitle("[ Online Players ]");
+        EmbedBuilder eb = createEmbed().withTitle("[ Online Players ]");
 
         byte worlds = reader.readByte();
         for (int a = 0; a < worlds; a++) {
