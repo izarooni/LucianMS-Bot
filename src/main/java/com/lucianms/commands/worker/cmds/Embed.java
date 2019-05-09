@@ -46,9 +46,12 @@ public class Embed extends BaseCommand {
         }
         if (command.getArgs().length < 2) {
             if (command.getArgs().length == 1) {
-                if (command.getArgs()[0].toString().equalsIgnoreCase("cancel")) {
+                String arg = command.getArgs()[0].toString();
+                if (arg.equalsIgnoreCase("cancel")) {
                     user.setEmbedBuilder(null);
                     userMessage.reply("No longer configuring an embedded message.");
+                } else if (arg.equalsIgnoreCase("send")) {
+                    createResponse(event).withEmbed(embed.build()).build();
                 }
             } else {
                 embed = createEmbed()
@@ -56,14 +59,17 @@ public class Embed extends BaseCommand {
                         .appendField("description", getDescription(), false)
                         .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <action/cancel> [arguments]`")
                         .appendDesc("\r\n\r\n`<action>` may be any of the following:")
-                        .appendDesc("\r\ncolor, title, footer and description");
+                        .appendDesc("\r\ncolor, title, footer and description")
+                        .appendDesc("\r\n\r\nUse `").appendDesc(getName()).appendDesc(" send` to create a message without being automatically deleted.");
                 createResponse(event).withEmbed(embed.build()).build();
             }
             return;
         }
+
         IMessage message = null;
+        String arg = command.getArgs()[0].toString();
         String content = command.concatFrom(1, " ");
-        switch (command.getArgs()[0].toString()) {
+        switch (arg) {
             case "color":
                 if (content.equalsIgnoreCase("--reset")) {
                     embed.withColor(26, 188, 156);
