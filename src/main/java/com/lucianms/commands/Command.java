@@ -134,6 +134,7 @@ public class Command {
         for (int j = i; j < args.length; j++) {
             sb.append(args[j].toString()).append(separator);
         }
+        if (sb.length() > 0) sb.setLength(sb.length() - separator.length());
         return sb.toString();
     }
 }

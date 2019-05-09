@@ -10,6 +10,8 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.MessageBuilder;
 
+import java.util.List;
+
 /**
  * <p>
  * !permission give/revoke ID permission
@@ -34,8 +36,13 @@ public class Permission extends BaseCommand {
             Long ID = args[1].parseNumber();
             String permission = args[2].toString();
             if (ID == null) {
-                createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
-                return;
+                List<IUser> mentions = event.getMessage().getMentions();
+                if (!mentions.isEmpty()) {
+                    ID = mentions.get(0).getLongID();
+                } else {
+                    createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
+                    return;
+                }
             }
             if (guild.getGuild().getRoleByID(ID) != null) {
                 if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {

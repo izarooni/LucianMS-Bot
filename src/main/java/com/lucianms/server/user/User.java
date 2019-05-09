@@ -4,6 +4,7 @@ import com.lucianms.utils.Permissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * @author izarooni
@@ -16,9 +17,10 @@ public class User {
     private final Permissions permissions;
 
     private long applicationGuildID;
-    private boolean applicationEditMode;
     private int applicationStatus;
     private String[] applicationResponses;
+
+    private EmbedBuilder embedBuilder;
 
     public User(IUser user) {
         this.user = user;
@@ -44,14 +46,6 @@ public class User {
         this.applicationGuildID = applicationGuildID;
     }
 
-    public boolean isApplicationEditMode() {
-        return applicationEditMode;
-    }
-
-    public void setApplicationEditMode(boolean applicationEditMode) {
-        this.applicationEditMode = applicationEditMode;
-    }
-
     public int getApplicationStatus() {
         return applicationStatus;
     }
@@ -66,5 +60,13 @@ public class User {
 
     public void setApplicationResponses(String[] applicationResponses) {
         this.applicationResponses = applicationResponses;
+    }
+
+    public EmbedBuilder getEmbedBuilder() {
+        return embedBuilder;
+    }
+
+    public void setEmbedBuilder(EmbedBuilder embedBuilder) {
+        this.embedBuilder = embedBuilder;
     }
 }

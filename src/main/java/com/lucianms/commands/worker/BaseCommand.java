@@ -11,6 +11,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -67,7 +68,8 @@ public abstract class BaseCommand {
         Guild guild = Discord.getGuilds().get(ig.getLongID());
         User user = guild.addUserIfAbsent(event.getAuthor());
         for (IRole role : event.getAuthor().getRolesForGuild(ig)) {
-            if (guild.getPermissions().contains(role.getLongID(), permission)) {
+            if (role.getPermissions().contains(Permissions.ADMINISTRATOR)
+                    || guild.getPermissions().contains(role.getLongID(), permission)) {
                 return true;
             }
         }

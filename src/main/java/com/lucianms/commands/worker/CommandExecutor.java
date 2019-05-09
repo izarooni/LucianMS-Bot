@@ -47,6 +47,9 @@ public class CommandExecutor {
         commands.put("ticket",       new Ticket());
         commands.put("set",          new Set());
         commands.put("apply",        new Apply());
+        commands.put("embed",        new Embed());
+        commands.put("news",         new News());
+        commands.put("updates",      new Updates());
         // @formatter:on
     }
 

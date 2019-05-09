@@ -8,6 +8,7 @@ import com.lucianms.server.user.User;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * @author izarooni
@@ -20,8 +21,7 @@ public class Apply extends BaseCommand {
             "What is your age?",
             "How long have you been playing Chirithy?",
             "Tell me a little bit about yourself",
-            "What could you do to help benefit Chirithy?"
-    };
+            "What could you do to help benefit Chirithy?"};
 
     public Apply() {
         super(false);
@@ -44,15 +44,25 @@ public class Apply extends BaseCommand {
             return;
         }
         user.setApplicationGuildID(event.getGuild().getLongID());
-        user.setApplicationResponses(new String[Questions.length]);
+        String[] responses = new String[Questions.length];
+        for (int i = 0; i < Questions.length; i++) {
+            responses[i] = "_No Response_";
+        }
+        user.setApplicationResponses(responses);
         user.setApplicationStatus(0);
+
+        EmbedBuilder embeder = createEmbed();
+        for (int i = 0; i < Apply.Questions.length; i++) {
+            embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+        }
 
         IPrivateChannel dm = user.getUser().getOrCreatePMChannel();
         dm.sendMessage(
-                "For this GM application, I will ask you a few questions here and have you answer them."
+                "Please answer the following questions."
                         + "\r\nThe messages you send will be forwarded to the Chirithy staff where it will be reviewed and discussed."
-                        + "\r\nYou may at any time cancel this application by sending the message `cancel`");
-        dm.sendMessage(Questions[user.getApplicationStatus()]);
+                        + "\r\n\r\nWhen you are complete, say the word `send` then your application will be submitted."
+                        + "\r\nYou may cancel at any time by saying `cancel`."
+                        + "\r\nTo select a question, simply say the number assigned to the question then answer accordingly.", embeder.build());
         Discord.getUserHandles().put(user.getUser().getLongID(), user);
     }
 }
