@@ -23,5 +23,8 @@ public enum CPermissions {
     Pardon,
     Ticket,
     Set,
-    Apply
+    Apply,
+    Embed,
+    News,
+    Updates
 }
