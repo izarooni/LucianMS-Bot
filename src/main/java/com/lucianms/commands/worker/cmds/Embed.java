@@ -25,7 +25,7 @@ public class Embed extends BaseCommand {
 
     @Override
     public String getDescription() {
-        return "Create your owm embedded message";
+        return "Create your own embedded message";
     }
 
     @Override
@@ -37,11 +37,11 @@ public class Embed extends BaseCommand {
 
         if (embed == null) {
             user.setEmbedBuilder(createEmbed());
-            String content = "Embed created and can now be configured. Re-use command for options.";
+            String content = "Embed initialized and is now configurable. Use `%s` command for options.";
             if (!canDeleteMessages) {
                 content += "\r\nFYI, I do not have permission to delete messages in this channel.";
             }
-            userMessage.reply(content);
+            userMessage.reply(String.format(content, getName()));
             return;
         }
         if (command.getArgs().length < 2) {
@@ -51,6 +51,7 @@ public class Embed extends BaseCommand {
                     user.setEmbedBuilder(null);
                     userMessage.reply("No longer configuring an embedded message.");
                 } else if (arg.equalsIgnoreCase("send")) {
+                    event.getMessage().delete();
                     createResponse(event).withEmbed(embed.build()).build();
                 }
             } else {
@@ -65,6 +66,13 @@ public class Embed extends BaseCommand {
             }
             return;
         }
+        manageEmbed(event, user, command);
+    }
+
+    private void manageEmbed(MessageReceivedEvent event, User user, Command command) {
+        IMessage userMessage = event.getMessage();
+        boolean canDeleteMessages = event.getChannel().getModifiedPermissions(Discord.getBot().getClient().getOurUser()).contains(Permissions.MANAGE_MESSAGES);
+        EmbedBuilder embed = user.getEmbedBuilder();
 
         IMessage message = null;
         String arg = command.getArgs()[0].toString();
@@ -78,15 +86,15 @@ public class Embed extends BaseCommand {
                         Color shit = (Color) Color.class.getField(content).get(null);
                         embed.withColor(shit);
                     } catch (Exception ignore) {
-                        int r, g, b;
-                        try {
-                            String[] sp = content.split(" ");
-                            r = Integer.parseInt(sp[0]);
-                            g = Integer.parseInt(sp[1]);
-                            b = Integer.parseInt(sp[2]);
-                            embed.withColor(r, g, b);
-                        } catch (NumberFormatException alsoIgnore) {
-                            message = userMessage.reply("Either specify a basic color name or provide 3 numbers in the order of R, G and B");
+                        if (content.startsWith("#")) {
+                            try {
+                                embed.withColor(Integer.parseInt(content.substring(1), 16));
+                            } catch (NumberFormatException e) {
+                                message = userMessage.reply("That is not a number.");
+                                break;
+                            }
+                        } else {
+                            message = userMessage.reply("Either specify a basic color name or provide a hexadecimal color.");
                             break;
                         }
                     }
@@ -98,16 +106,18 @@ public class Embed extends BaseCommand {
                 message = userMessage.reply("Updated title", embed.build());
                 break;
             case "footer":
-                updateOrReset(content, embed::withDescription);
+                updateOrReset(content, embed::withFooterText);
                 message = userMessage.reply("Updated footer", embed.build());
                 break;
+            case "desc":
             case "description":
-                updateOrReset(content, embed::withTitle);
+                if (content.isEmpty()) content = command.concatFrom(0, " ").substring(arg.length());
+                updateOrReset(content, embed::withDescription);
                 message = userMessage.reply("Updated description", embed.build());
                 break;
         }
         if (canDeleteMessages && message != null) {
-            TaskExecutor.executeLater(new DelayedMessageDelete(message, userMessage), 3000);
+            TaskExecutor.executeLater(new DelayedMessageDelete(message, userMessage), 5000);
         }
     }
 
