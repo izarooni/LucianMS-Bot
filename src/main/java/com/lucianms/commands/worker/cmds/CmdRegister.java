@@ -2,8 +2,8 @@ package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
-import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.utils.HexUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +20,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class Register extends BaseCommand {
+public class CmdRegister extends BaseCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Register.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdRegister.class);
 
-    public Register() {
-        super(false, CommandType.PrivateMessage);
+    public CmdRegister(CommandUtil permission) {
+        super(permission);
     }
 
     @Override

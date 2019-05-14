@@ -20,21 +20,11 @@ import sx.blah.discord.util.MessageBuilder;
  */
 public abstract class BaseCommand {
 
-    private final boolean permissionRequired;
-    private final CommandType commandType;
+    private final CommandUtil permission;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
-    public BaseCommand() {
-        this(true, CommandType.Public);
-    }
-
-    public BaseCommand(boolean permissionRequired) {
-        this(permissionRequired, CommandType.Public);
-    }
-
-    public BaseCommand(boolean permissionRequired, CommandType commandType) {
-        this.permissionRequired = permissionRequired;
-        this.commandType = commandType;
+    public BaseCommand(CommandUtil permission) {
+        this.permission = permission;
     }
 
     public final String getName() {
@@ -44,12 +34,12 @@ public abstract class BaseCommand {
 
     public abstract String getDescription();
 
-    public final boolean isPermissionRequired() {
-        return permissionRequired;
+    public final CommandUtil getPermission() {
+        return permission;
     }
 
     public CommandType getCommandType() {
-        return commandType;
+        return permission.type;
     }
 
     /**

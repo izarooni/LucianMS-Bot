@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.scheduler.TaskExecutor;
 import com.lucianms.scheduler.tasks.DelayedMessageDelete;
 import com.lucianms.server.user.User;
@@ -17,10 +18,10 @@ import java.util.function.Consumer;
 /**
  * @author izarooni
  */
-public class Embed extends BaseCommand {
+public class CmdEmbed extends BaseCommand {
 
-    public Embed() {
-        super(true);
+    public CmdEmbed(CommandUtil permission) {
+        super(permission);
     }
 
     @Override

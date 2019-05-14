@@ -1,37 +1,39 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.handle.obj.IMessage;
 
 /**
  * @author izarooni
  */
-public class Online extends BaseCommand {
+public class CmdSafeShutdown extends BaseCommand {
 
-    public Online() {
-        super(false, CommandType.Both);
+    public CmdSafeShutdown(CommandUtil permission) {
+        super(permission);
     }
 
     @Override
     public String getDescription() {
-        return "Display a list of all online in-game players";
+        return "Attempt to safely shutdown the server";
     }
 
     @Override
     public void invoke(MessageReceivedEvent event, Command command) {
-        if (ServerSession.getSession() == null) {
-            createResponse(event).withContent("The server is currently not online!").build();
-        } else {
+        IMessage message = event.getChannel().sendMessage("Stopping the server...");
+        try {
             MaplePacketWriter writer = new MaplePacketWriter(1);
-            writer.write(Headers.Online.value);
-            writer.writeLong(event.getChannel().getLongID());
+            writer.write(Headers.Shutdown.value);
             ServerSession.sendPacket(writer.getPacket());
+            message.edit("Complete... Goodbye!");
+        } catch (NullPointerException e) {
+            message.edit("No server connection established. Probably already shut down. Goodbye!");
         }
+        System.exit(0);
     }
 }

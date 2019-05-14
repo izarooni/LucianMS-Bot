@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -13,7 +14,7 @@ import sx.blah.discord.util.EmbedBuilder;
 /**
  * @author izarooni
  */
-public class Apply extends BaseCommand {
+public class CmdApply extends BaseCommand {
 
     public static final String[] Questions = new String[]{
             "What is your name?",
@@ -23,8 +24,8 @@ public class Apply extends BaseCommand {
             "Tell me a little bit about yourself",
             "What could you do to help benefit Chirithy?"};
 
-    public Apply() {
-        super(false);
+    public CmdApply(CommandUtil permission) {
+        super(permission);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class Apply extends BaseCommand {
         user.setApplicationStatus(0);
 
         EmbedBuilder embeder = createEmbed();
-        for (int i = 0; i < Apply.Questions.length; i++) {
-            embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+        for (int i = 0; i < CmdApply.Questions.length; i++) {
+            embeder.appendField(String.format("%d ). %s", (i + 1), CmdApply.Questions[i]), user.getApplicationResponses()[i], false);
         }
 
         IPrivateChannel dm = user.getUser().getOrCreatePMChannel();

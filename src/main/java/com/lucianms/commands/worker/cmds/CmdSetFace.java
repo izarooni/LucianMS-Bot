@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
@@ -13,11 +14,15 @@ import sx.blah.discord.util.MessageBuilder;
 /**
  * @author izarooni
  */
-public class SetHair extends BaseCommand {
+public class CmdSetFace extends BaseCommand {
+
+    public CmdSetFace(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {
-        return "Change the hair of a specified in-game player";
+        return "Change the face of a specified in-game player";
     }
 
     @Override
@@ -25,23 +30,24 @@ public class SetHair extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
-            Long var_hairId = args[1].parseNumber();
-            if (var_hairId == null) {
+            Long var_faceId = args[1].parseNumber();
+            if (var_faceId == null) {
                 new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel()).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
                 return;
             }
-            int hairId = var_hairId.intValue();
-            MaplePacketWriter writer = new MaplePacketWriter(1 + username.length());
-            writer.write(Headers.SetHair.value);
+            int faceId = var_faceId.intValue();
+
+            MaplePacketWriter writer = new MaplePacketWriter(13 + username.length());
+            writer.write(Headers.SetFace.value);
             writer.writeLong(event.getChannel().getLongID());
             writer.writeMapleString(username);
-            writer.writeInt(hairId);
+            writer.writeInt(faceId);
             ServerSession.sendPacket(writer.getPacket());
         } else {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <hair ID>`");
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <face ID>`");
             createResponse(event).withEmbed(embed.build()).build();
         }
     }

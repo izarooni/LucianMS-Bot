@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -11,7 +12,11 @@ import java.sql.*;
 /**
  * @author izarooni
  */
-public class Sql extends BaseCommand {
+public class CmdSql extends BaseCommand {
+
+    public CmdSql(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {

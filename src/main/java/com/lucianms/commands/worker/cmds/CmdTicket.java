@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import com.lucianms.server.GuildTicket;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -11,10 +12,10 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
-public class Ticket extends BaseCommand {
+public class CmdTicket extends BaseCommand {
 
-    public Ticket() {
-        super(false);
+    public CmdTicket(CommandUtil permission) {
+        super(permission);
     }
 
     @Override

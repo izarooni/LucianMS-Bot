@@ -3,7 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
-import com.lucianms.commands.worker.CPermissions;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -19,7 +19,11 @@ import java.util.List;
  *
  * @author izarooni
  */
-public class Permission extends BaseCommand {
+public class CmdPermission extends BaseCommand {
+
+    public CmdPermission(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {
@@ -47,7 +51,7 @@ public class Permission extends BaseCommand {
             if (guild.getGuild().getRoleByID(ID) != null) {
                 if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
                     if (permission.equals("*")) {
-                        for (CPermissions cperms : CPermissions.values()) {
+                        for (CommandUtil cperms : CommandUtil.values()) {
                             guild.getPermissions().give(ID, cperms.name().toLowerCase());
                         }
                     } else {
@@ -59,7 +63,7 @@ public class Permission extends BaseCommand {
                     createResponse(event).appendContent("Success!").build();
                 } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
                     if (permission.equals("*")) {
-                        for (CPermissions cperms : CPermissions.values()) {
+                        for (CommandUtil cperms : CommandUtil.values()) {
                             guild.getPermissions().revoke(ID, cperms.name().toLowerCase());
                         }
                     } else {
@@ -75,7 +79,7 @@ public class Permission extends BaseCommand {
                 User target = guild.addUserIfAbsent(iu);
                 if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
                     if (permission.equals("*")) {
-                        for (CPermissions cperms : CPermissions.values()) {
+                        for (CommandUtil cperms : CommandUtil.values()) {
                             target.getPermissions().give(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {
@@ -87,7 +91,7 @@ public class Permission extends BaseCommand {
                     createResponse(event).appendContent("Success!").build();
                 } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
                     if (permission.equals("*")) {
-                        for (CPermissions cperms : CPermissions.values()) {
+                        for (CommandUtil cperms : CommandUtil.values()) {
                             target.getPermissions().revoke(guild.getId(), cperms.name().toLowerCase());
                         }
                     } else {

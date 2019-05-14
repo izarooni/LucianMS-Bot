@@ -3,12 +3,17 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
-public class Pardon extends BaseCommand {
+public class CmdPardon extends BaseCommand {
+
+    public CmdPardon(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {
@@ -25,7 +30,7 @@ public class Pardon extends BaseCommand {
                 guild.getGuildConfig().getWordBlackList().removeIf(black -> black.equalsIgnoreCase(word));
             }
             guild.getGuildConfig().getWordBlackList().save(guild);
-            createResponse(event).withContent("Word(s) successfully removed from the blacklist!", MessageBuilder.Styles.ITALICS).build();
+            createResponse(event).withContent("Word(s) successfully removed from the blacklist.", MessageBuilder.Styles.ITALICS).build();
         } else {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")

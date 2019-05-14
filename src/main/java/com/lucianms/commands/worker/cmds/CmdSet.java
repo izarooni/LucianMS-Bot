@@ -3,13 +3,18 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-public class Set extends BaseCommand {
+public class CmdSet extends BaseCommand {
 
     private static final String CmdTicketDescription = "Modify settings for the ticket system";
+
+    public CmdSet(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {

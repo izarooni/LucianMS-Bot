@@ -4,6 +4,7 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -14,10 +15,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Unstuck extends BaseCommand {
+public class CmdUnstuck extends BaseCommand {
 
-    public Unstuck() {
-        super(false, CommandType.Both);
+    public CmdUnstuck(CommandUtil permission) {
+        super(permission);
     }
 
     @Override

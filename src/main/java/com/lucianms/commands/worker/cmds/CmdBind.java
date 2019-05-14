@@ -1,8 +1,8 @@
 package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.commands.Command;
-import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
@@ -12,10 +12,10 @@ import sx.blah.discord.util.EmbedBuilder;
 /**
  * @author izarooni
  */
-public class Bind extends BaseCommand {
+public class CmdBind extends BaseCommand {
 
-    public Bind() {
-        super(false, CommandType.Both);
+    public CmdBind(CommandUtil permissions) {
+        super(permissions);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
@@ -16,13 +17,17 @@ import java.sql.SQLException;
 /**
  * @author izarooni
  */
-public class Job extends BaseCommand {
+public class CmdWarp extends BaseCommand {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(BaseCommand.class);
 
+    public CmdWarp(CommandUtil permission) {
+        super(permission);
+    }
+
     @Override
     public String getDescription() {
-        return "Change the job of a specified offline player";
+        return "Warp a specified offline character";
     }
 
     @Override
@@ -35,9 +40,9 @@ public class Job extends BaseCommand {
                 createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid number").build();
                 return;
             }
-            int jobId = var_mapId.intValue();
-            if (jobId < 0 || !isJobId(jobId)) {
-                createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid job").build();
+            int mapId = var_mapId.intValue();
+            if (mapId < 0) {
+                createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid map id").build();
                 return;
             }
             try (Connection con = Discord.getMapleConnection()) {
@@ -46,8 +51,8 @@ public class Job extends BaseCommand {
                     try (ResultSet rs = query.executeQuery()) {
                         if (rs.next()) {
                             if (rs.getInt("total") == 1) {
-                                try (PreparedStatement update = con.prepareStatement("update characters set job = ? where name = ?")) {
-                                    update.setInt(1, jobId);
+                                try (PreparedStatement update = con.prepareStatement("update characters set map = ? where name = ?")) {
+                                    update.setInt(1, mapId);
                                     update.setString(2, username);
                                     update.executeUpdate();
                                     createResponse(event).appendContent("Success!").build();
@@ -59,22 +64,15 @@ public class Job extends BaseCommand {
                     }
                 }
             } catch (SQLException e) {
-                createResponse(event).appendContent("An error occurred!").appendCode("", e.getMessage()).build();
+                createResponse(event).appendContent("An error occurred!").build();
                 e.printStackTrace();
             }
         } else {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <job ID>`");
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <map ID>`");
             createResponse(event).withEmbed(embed.build()).build();
         }
     }
-
-
-    private boolean isJobId(int jobId) {
-        int advancement = jobId % 100 % 10;
-        return (advancement == 0 || advancement == 1 || advancement == 2) && !(jobId == 2200);
-    }
-
 }

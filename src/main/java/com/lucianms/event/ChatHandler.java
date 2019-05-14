@@ -3,7 +3,7 @@ package com.lucianms.event;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.CommandExecutor;
-import com.lucianms.commands.worker.cmds.Apply;
+import com.lucianms.commands.worker.cmds.CmdApply;
 import com.lucianms.server.Guild;
 import com.lucianms.server.GuildTicket;
 import com.lucianms.server.user.User;
@@ -80,9 +80,9 @@ public class ChatHandler {
             return;
         }
         // ask a question assigned to the current status
-        if (user.getApplicationStatus() < Apply.Questions.length) {
+        if (user.getApplicationStatus() < CmdApply.Questions.length) {
             user.getApplicationResponses()[user.getApplicationStatus()] = content;
-            user.setApplicationStatus(Apply.Questions.length);
+            user.setApplicationStatus(CmdApply.Questions.length);
         }
 
         if (content.equalsIgnoreCase("send")) {
@@ -90,8 +90,8 @@ public class ChatHandler {
             Guild guild = Discord.getGuilds().get(user.getApplicationGuildID());
             IChannel applications = Discord.getBot().getClient().getChannelByID(Long.parseLong(guild.getGuildConfig().getCIDApplicationDestination()));
             EmbedBuilder embeder = createEmbed();
-            for (int i = 0; i < Apply.Questions.length; i++) {
-                embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+            for (int i = 0; i < CmdApply.Questions.length; i++) {
+                embeder.appendField(String.format("%d ). %s", (i + 1), CmdApply.Questions[i]), user.getApplicationResponses()[i], false);
             }
             IUser dUser = user.getUser();
             embeder.withTitle("GM Application submission");
@@ -107,11 +107,11 @@ public class ChatHandler {
                 // ask the specified question for a new response
                 int responseID = Integer.parseInt(content);
                 user.setApplicationStatus(responseID - 1);
-                event.getChannel().sendMessage(Apply.Questions[responseID - 1]);
+                event.getChannel().sendMessage(CmdApply.Questions[responseID - 1]);
             } catch (NumberFormatException ignore) {
                 EmbedBuilder embeder = createEmbed();
-                for (int i = 0; i < Apply.Questions.length; i++) {
-                    embeder.appendField(String.format("%d ). %s", (i + 1), Apply.Questions[i]), user.getApplicationResponses()[i], false);
+                for (int i = 0; i < CmdApply.Questions.length; i++) {
+                    embeder.appendField(String.format("%d ). %s", (i + 1), CmdApply.Questions[i]), user.getApplicationResponses()[i], false);
                 }
                 event.getChannel().sendMessage("Before I send this to the Chirithy staff, are you sure you would like to use these responses?"
                         + "\r\nTo edit a response, reply with the number associated to a question you would like to edit."

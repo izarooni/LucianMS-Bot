@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -20,9 +21,13 @@ import java.util.Optional;
 /**
  * @author izarooni
  */
-public class Strip extends BaseCommand {
+public class CmdStrip extends BaseCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Strip.class);
+    public CmdStrip(CommandUtil permission) {
+        super(permission);
+    }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdStrip.class);
 
     @Override
     public String getDescription() {

@@ -3,6 +3,7 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
@@ -11,15 +12,15 @@ import java.sql.*;
 /**
  * @author izarooni
  */
-public class News extends BaseCommand {
+public class CmdUpdates extends BaseCommand {
 
-    public News() {
-        super(true);
+    public CmdUpdates(CommandUtil permission) {
+        super(permission);
     }
 
     @Override
     public String getDescription() {
-        return "Create a news article for the website";
+        return "Create a news update for the website";
     }
 
     @Override
@@ -38,7 +39,7 @@ public class News extends BaseCommand {
         String title = split[0];
         String content = split[1];
         try (Connection con = Discord.getMapleConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("insert into _web_posts values (default, ?, 'news', ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = con.prepareStatement("insert into _web_posts values (default, ?, 'updates', ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, title);
                 ps.setString(2, content);
                 ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));

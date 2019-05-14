@@ -2,6 +2,7 @@ package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.Promise;
 import org.slf4j.Logger;
@@ -11,9 +12,13 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 /**
  * @author izarooni
  */
-public class Connect extends BaseCommand {
+public class CmdConnect extends BaseCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Connect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdConnect.class);
+
+    public CmdConnect(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {

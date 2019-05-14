@@ -2,11 +2,16 @@ package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
+import com.lucianms.commands.worker.CommandUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.util.EmbedBuilder;
 
-public class GetRoles extends BaseCommand {
+public class CmdGetRoles extends BaseCommand {
+
+    public CmdGetRoles(CommandUtil permission) {
+        super(permission);
+    }
 
     @Override
     public String getDescription() {
