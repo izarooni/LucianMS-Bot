@@ -30,7 +30,8 @@ public class News extends BaseCommand {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <news/updates> <content>");
+                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" title | content")
+                    .appendDesc("\r\nFor example: `").appendDesc(getName()).appendDesc(" title for your post | the content for your post`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
         }
