@@ -27,6 +27,9 @@ public class Set extends BaseCommand {
             return;
         }
         switch (command.args[0].toString()) {
+            case "name":
+                updateUsername(event, command);
+                break;
             case "apps":
                 manageApplicationSystem(event, command);
                 break;
@@ -34,6 +37,20 @@ public class Set extends BaseCommand {
                 manageTicketSystem(event, command);
                 break;
         }
+    }
+
+    private void updateUsername(MessageReceivedEvent event, Command command) {
+        if (command.args.length == 1) {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" name <username>`");
+            createResponse(event).withEmbed(embed.build()).build();
+            return;
+        }
+        String username = command.concatFrom(1, " ");
+        Discord.getBot().getClient().changeUsername(username);
+        event.getMessage().reply("Username changed");
     }
 
     private void manageApplicationSystem(MessageReceivedEvent event, Command command) {

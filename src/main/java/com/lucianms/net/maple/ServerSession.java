@@ -42,12 +42,12 @@ public class ServerSession {
         });
     }
 
-    public static void sendPacket(byte[] packet) {
+    public static boolean sendPacket(byte[] packet) {
         if (session == null) {
-            LOGGER.error("Currently not connected to the server");
-            return;
+            return false;
         }
         session.writeAndFlush(packet);
+        return true;
     }
 
     public static Channel getSession() {
