@@ -8,6 +8,7 @@ import com.lucianms.server.Guild;
 import com.lucianms.server.user.User;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
 import java.util.List;
@@ -105,6 +106,12 @@ public class CmdPermission extends BaseCommand {
             } else {
                 createResponse(event).appendContent("Could not find a ROLE or USER with the specified ID").build();
             }
+        } else {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <add/remove> <role/user ID> <permission/*>");
+            createResponse(event).withEmbed(embed.build()).build();
         }
     }
 }

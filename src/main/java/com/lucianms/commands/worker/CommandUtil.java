@@ -22,6 +22,7 @@ public enum CommandUtil {
     News         (true,  CommandCategory.Administrator, CommandType.Public, CmdNews.class),
     Updates      (true,  CommandCategory.Administrator, CommandType.Public, CmdUpdates.class),
     SafeShutdown (true,  CommandCategory.Administrator, CommandType.Public, CmdSafeShutdown.class),
+    Permission   (true,  CommandCategory.Administrator, CommandType.Public, CmdPermission.class),
     Bind         (false, CommandCategory.Game,          CommandType.Both,   CmdBind.class),
     Online       (false, CommandCategory.Game,          CommandType.Both,   CmdOnline.class),
     Unstuck      (false, CommandCategory.Game,          CommandType.Both,   CmdUnstuck.class),
