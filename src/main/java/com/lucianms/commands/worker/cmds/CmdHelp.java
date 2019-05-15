@@ -42,10 +42,9 @@ public class CmdHelp extends BaseCommand {
                 if (perms.type == CommandType.Both
                         || (perms.type == CommandType.Private && event.getChannel().isPrivate())
                         || (perms.type == CommandType.Public && !event.getChannel().isPrivate())) {
-                    String cmdName = perms.name().toLowerCase();
-                    BaseCommand cmd = CommandExecutor.getCommand(cmdName);
-                    if (!cmd.getPermission().requirePermission || canExecute(event, cmdName)) {
-                        sb.append("**").append(CommandExecutor.CMD_PREFIX).append(cmdName).append("** - ").append(cmd.getDescription()).append("\r\n");
+                    BaseCommand cmd = CommandExecutor.getCommand(perms.name().toLowerCase());
+                    if (!cmd.getPermission().requirePermission || canExecute(event, perms)) {
+                        sb.append("**").append(cmd.getName()).append("** - ").append(cmd.getDescription()).append("\r\n");
                     }
                 }
             }

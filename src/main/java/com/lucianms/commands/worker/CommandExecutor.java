@@ -45,7 +45,7 @@ public class CommandExecutor {
             // channel type (private or public) matches command requirement
             if (commandType.canUseCommand(event.getChannel())) {
                 if (!event.getChannel().isPrivate()) { // is a public discord channel
-                    if (!base.getPermission().requirePermission || base.canExecute(event, command.getCommand().toLowerCase())) {
+                    if (!base.getPermission().requirePermission || base.canExecute(event, base.getPermission())) {
                         base.invoke(event, command);
                     } else {
                         event.getChannel().sendMessage("You do not have permission to use this command");

@@ -8,10 +8,7 @@ import com.lucianms.server.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -46,8 +43,15 @@ public abstract class BaseCommand {
      *
      * @return true if the command can be executed by the command user, false otherwise
      */
-    public boolean canExecute(MessageReceivedEvent event, String permission) {
-        IGuild ig = event.getChannel().getGuild();
+    public boolean canExecute(MessageReceivedEvent event, CommandUtil permission) {
+        IChannel ch = event.getChannel();
+
+        if (ch.isPrivate()) {
+            return !permission.requirePermission
+                    && (permission.type == CommandType.Private || permission.type == CommandType.Both);
+        }
+
+        IGuild ig = ch.getGuild();
         IUser iu = event.getAuthor();
 
         if (iu.getStringID().equals(Discord.getConfig().get("global", "owner_id", String.class))) {
@@ -56,13 +60,15 @@ public abstract class BaseCommand {
 
         Guild guild = Discord.getGuilds().get(ig.getLongID());
         User user = guild.addUserIfAbsent(event.getAuthor());
+        String permissionName = permission.name().toLowerCase();
+
         for (IRole role : event.getAuthor().getRolesForGuild(ig)) {
             if (role.getPermissions().contains(Permissions.ADMINISTRATOR)
-                    || guild.getPermissions().contains(role.getLongID(), permission)) {
+                    || guild.getPermissions().contains(role.getLongID(), permissionName)) {
                 return true;
             }
         }
-        return user.getPermissions().contains(ig.getLongID(), permission);
+        return user.getPermissions().contains(ig.getLongID(), permissionName);
     }
 
     /**

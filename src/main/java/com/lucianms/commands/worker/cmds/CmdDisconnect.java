@@ -1,7 +1,6 @@
 package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.commands.Command;
-import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
@@ -10,7 +9,6 @@ import com.lucianms.utils.packet.send.MaplePacketWriter;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
 
 /**
  * @author izarooni
@@ -19,11 +17,6 @@ public class CmdDisconnect extends BaseCommand {
 
     public CmdDisconnect(CommandUtil permission) {
         super(permission);
-    }
-
-    @Override
-    public boolean canExecute(MessageReceivedEvent event, String permission) {
-        return event.getChannel().isPrivate() || super.canExecute(event, permission);
     }
 
     @Override
