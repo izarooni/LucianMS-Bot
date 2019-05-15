@@ -40,7 +40,7 @@ public class CmdHelp extends BaseCommand {
             StringBuilder sb = new StringBuilder();
             for (CommandUtil perms : entry.getValue()) {
                 if (perms.type == CommandType.Both
-                        || (perms.type == CommandType.PrivateMessage && event.getChannel().isPrivate())
+                        || (perms.type == CommandType.Private && event.getChannel().isPrivate())
                         || (perms.type == CommandType.Public && !event.getChannel().isPrivate())) {
                     String cmdName = perms.name().toLowerCase();
                     BaseCommand cmd = CommandExecutor.getCommand(cmdName);
@@ -49,8 +49,10 @@ public class CmdHelp extends BaseCommand {
                     }
                 }
             }
-            embed.appendField(entry.getKey().name(), sb.toString(), false);
-            sb.setLength(0);
+            if (sb.length() > 0) {
+                embed.appendField(entry.getKey().name(), sb.toString(), false);
+                sb.setLength(0);
+            }
         }
         RequestBuffer.request(() -> createResponse(event).withEmbed(embed.build()).build());
     }

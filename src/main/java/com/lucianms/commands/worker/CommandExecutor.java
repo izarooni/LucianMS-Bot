@@ -1,6 +1,5 @@
 package com.lucianms.commands.worker;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
 import org.slf4j.Logger;

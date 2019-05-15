@@ -34,7 +34,8 @@ public enum CommandUtil {
     setHair      (true,  CommandCategory.Game,          CommandType.Public, CmdSetHair.class),
     Reserve      (true,  CommandCategory.Game,          CommandType.Public, CmdReserve.class),
     ReloadCS     (true,  CommandCategory.Game,          CommandType.Public, CmdReloadCS.class),
-    Disconnect   (true,  CommandCategory.Game,          CommandType.Both,   CmdDisconnect.class);
+    Disconnect   (true,  CommandCategory.Game,          CommandType.Both,   CmdDisconnect.class),
+    Register     (false, CommandCategory.Game,          CommandType.Private,CmdRegister.class);
     //@formatter:on
     public final boolean requirePermission;
     public final CommandCategory category;

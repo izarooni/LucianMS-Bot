@@ -2,7 +2,6 @@ package com.lucianms.commands.worker.cmds;
 
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
-import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -40,7 +39,7 @@ public class CmdUnstuck extends BaseCommand {
                     ps.setLong(1, userID);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            event.getChannel().sendMessage(author.mention() + " Have you binded your Discord account to your in-game account?");
+                            event.getChannel().sendMessage(author.mention() + " Have you bound your Discord account to your in-game account?");
                             return;
                         } else {
                             accountID = rs.getInt("id");
@@ -77,7 +76,7 @@ public class CmdUnstuck extends BaseCommand {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <username>")
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <username>`")
                     .appendDesc("\r\n**username** is the IGN of a character on your account!");
             createResponse(event).withEmbed(embed.build()).build();
         }

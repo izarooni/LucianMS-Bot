@@ -33,7 +33,7 @@ public class BindResponse extends DiscordResponse {
                 new MessageBuilder(Discord.getBot().getClient()).withChannel(channelId).appendContent("Oh? Looks like the account ").appendContent(accountUsername, MessageBuilder.Styles.INLINE_CODE).appendContent(" is already bound to a Discord account").build();
             } else if (result == 3) {
                 IPrivateChannel dm = Discord.getBot().getClient().getOrCreatePMChannel(author);
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(dm).appendContent("Success! Your in-game account is now bound to your Discord account. Congrats! ").build();
+                new MessageBuilder(Discord.getBot().getClient()).withChannel(dm).appendContent("Success! Your in-game account is now bound to your Discord account.").build();
             } else {
                 String accountUsername = reader.readMapleAsciiString();
                 new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent("The account ").appendContent(accountUsername, MessageBuilder.Styles.INLINE_CODE).appendContent(" does not exist, or does not have any characters online").build();
