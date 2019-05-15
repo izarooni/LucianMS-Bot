@@ -45,7 +45,7 @@ public class CmdHelp extends BaseCommand {
                     String cmdName = perms.name().toLowerCase();
                     BaseCommand cmd = CommandExecutor.getCommand(cmdName);
                     if (!cmd.getPermission().requirePermission || canExecute(event, cmdName)) {
-                        sb.append("**").append(cmdName).append("** - ").append(cmd.getDescription()).append("\r\n");
+                        sb.append("**").append(CommandExecutor.CMD_PREFIX).append(cmdName).append("** - ").append(cmd.getDescription()).append("\r\n");
                     }
                 }
             }

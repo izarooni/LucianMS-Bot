@@ -28,8 +28,7 @@ public abstract class BaseCommand {
     }
 
     public final String getName() {
-        return Discord.getConfig().get("global", "cmd_prefix", String.class)
-                + getClass().getSimpleName().toLowerCase();
+        return CommandExecutor.CMD_PREFIX + permission.name().toLowerCase();
     }
 
     public abstract String getDescription();

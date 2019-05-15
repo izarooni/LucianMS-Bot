@@ -1,5 +1,6 @@
 package com.lucianms.commands.worker;
 
+import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 public class CommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandExecutor.class);
+    public static String CMD_PREFIX;
 
     private static HashMap<String, BaseCommand> COMMANDS = new HashMap<>();
 

@@ -1,6 +1,7 @@
 package com.lucianms;
 
 
+import com.lucianms.commands.worker.CommandExecutor;
 import com.lucianms.io.Defaults;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.scheduler.TaskExecutor;
@@ -88,6 +89,8 @@ public class Discord {
         try {
             config = loadConfiguration();
             LOGGER.info("Config file loaded");
+
+            CommandExecutor.CMD_PREFIX = config.get("global", "cmd_prefix", String.class);
 
             Profile.Section databaseSection = config.get("database");
             mapleDataSource = Database.createDataSource(databaseSection, databaseSection.get("maple_schema"));

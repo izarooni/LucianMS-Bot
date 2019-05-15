@@ -1,5 +1,6 @@
 package com.lucianms;
 
+import com.lucianms.commands.worker.CommandExecutor;
 import com.lucianms.event.ChatHandler;
 import com.lucianms.server.Guild;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.obj.ActivityType;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.DiscordException;
 
 /**
@@ -32,6 +35,8 @@ public class Bot {
                 if (event instanceof ReadyEvent) {
                     client.getGuilds().forEach(g -> Discord.getGuilds().put(g.getLongID(), new Guild(g)));
                     LOGGER.info("Registered " + Discord.getGuilds().size() + " guild wrappers");
+
+                    client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, String.format("Use %shelp for a list of commands", CommandExecutor.CMD_PREFIX));
                 }
             }
         });
