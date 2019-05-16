@@ -6,6 +6,8 @@ import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.server.Guild;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.ActivityType;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.util.EmbedBuilder;
 
 public class CmdSet extends BaseCommand {
@@ -27,11 +29,18 @@ public class CmdSet extends BaseCommand {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ticket>`");
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <config>`")
+                    .appendDesc("\r\n`<config>` may be the following: status, gtop, name, apps and ticket");
             createResponse(event).withEmbed(embed.build()).build();
             return;
         }
         switch (command.args[0].toString()) {
+            case "status":
+                updateDiscordPresence(event, command);
+                break;
+            case "vote":
+                updateVoteLink(event, command);
+                break;
             case "name":
                 updateUsername(event, command);
                 break;
@@ -42,6 +51,36 @@ public class CmdSet extends BaseCommand {
                 manageTicketSystem(event, command);
                 break;
         }
+    }
+
+    private void updateDiscordPresence(MessageReceivedEvent event, Command command) {
+        if (command.args.length == 1) {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <text>`");
+            createResponse(event).withEmbed(embed.build()).build();
+            return;
+        }
+        String content = command.concatFrom(1, " ");
+        Discord.getBot().getClient().changePresence(StatusType.ONLINE, ActivityType.PLAYING, content);
+        event.getMessage().reply("Presence updated");
+    }
+
+    private void updateVoteLink(MessageReceivedEvent event, Command command) {
+        if (command.args.length == 1) {
+            EmbedBuilder embed = createEmbed()
+                    .withTitle("How to use the command")
+                    .appendField("description", getDescription(), false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <URL>`");
+            createResponse(event).withEmbed(embed.build()).build();
+            return;
+        }
+        Guild guild = Discord.getGuilds().get(event.getGuild().getLongID());
+        String URL = command.args[1].toString(); // URL has no spaces, right?
+        guild.getGuildConfig().setVoteURL(URL);
+        guild.getGuildConfig().save(guild);
+        event.getMessage().reply("Vote URL updated");
     }
 
     private void updateUsername(MessageReceivedEvent event, Command command) {

@@ -35,7 +35,8 @@ public enum CommandUtil {
     Reserve      (true,  CommandCategory.Game,          CommandType.Public, CmdReserve.class),
     ReloadCS     (true,  CommandCategory.Game,          CommandType.Public, CmdReloadCS.class),
     Disconnect   (true,  CommandCategory.Game,          CommandType.Both,   CmdDisconnect.class),
-    Register     (false, CommandCategory.Game,          CommandType.Private,CmdRegister.class);
+    Register     (false, CommandCategory.Game,          CommandType.Private,CmdRegister.class),
+    Vote         (false, CommandCategory.General,       CommandType.Public, CmdVote.class);
     //@formatter:on
     public final boolean requirePermission;
     public final CommandCategory category;

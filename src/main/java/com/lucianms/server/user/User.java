@@ -22,6 +22,8 @@ public class User {
 
     private EmbedBuilder embedBuilder;
 
+    private int boundAccountID;
+
     public User(IUser user) {
         this.user = user;
         this.permissions = new Permissions(user);
@@ -68,5 +70,13 @@ public class User {
 
     public void setEmbedBuilder(EmbedBuilder embedBuilder) {
         this.embedBuilder = embedBuilder;
+    }
+
+    public int getBoundAccountID() {
+        return boundAccountID;
+    }
+
+    public void setBoundAccountID(int boundAccountID) {
+        this.boundAccountID = boundAccountID;
     }
 }

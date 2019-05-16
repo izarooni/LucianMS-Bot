@@ -13,10 +13,13 @@ public class GuildConfig implements Saveable<Guild> {
     private static final String TicketCreationKey = "cid_ticket_creation";
     private static final String TicketDestinationKey = "cid_ticket_destination";
     private static final String ApplicationDestinationKey = "cid_app_destination";
+    private static final String ServerVoteURLKey = "guild_gtop_vote_link";
 
     private final GuildWordBlackList wordBlackList;
     private String CIDTicketCreation, CIDTicketDestination;
     private String CIDApplicationDestination;
+
+    private String voteURL;
 
     GuildConfig() {
         wordBlackList = new GuildWordBlackList();
@@ -24,6 +27,8 @@ public class GuildConfig implements Saveable<Guild> {
         CIDApplicationDestination = "";
         CIDTicketCreation = "";
         CIDTicketDestination = "";
+
+        voteURL = "";
     }
 
     @Override
@@ -33,6 +38,7 @@ public class GuildConfig implements Saveable<Guild> {
             saveGuildProperty(guild, con, TicketDestinationKey, CIDTicketDestination);
             saveGuildProperty(guild, con, TicketCreationKey, CIDTicketCreation);
             saveGuildProperty(guild, con, ApplicationDestinationKey, CIDApplicationDestination);
+            saveGuildProperty(guild, con, ServerVoteURLKey, voteURL);
             con.setAutoCommit(true);
             return true;
         } catch (SQLException e) {
@@ -71,6 +77,9 @@ public class GuildConfig implements Saveable<Guild> {
                                 break;
                             case TicketDestinationKey:
                                 setCIDTicketDestination(property_value);
+                                break;
+                            case ServerVoteURLKey:
+                                setVoteURL(property_value);
                                 break;
                         }
                     }
@@ -111,5 +120,13 @@ public class GuildConfig implements Saveable<Guild> {
 
     public void setCIDTicketDestination(String CIDTicketDestination) {
         this.CIDTicketDestination = CIDTicketDestination;
+    }
+
+    public String getVoteURL() {
+        return voteURL;
+    }
+
+    public void setVoteURL(String voteURL) {
+        this.voteURL = voteURL;
     }
 }
