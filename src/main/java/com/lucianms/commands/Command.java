@@ -33,9 +33,9 @@ public class Command {
             return name.equalsIgnoreCase(message);
         }
 
-        public Long parseNumber() {
+        public Long parseUnsignedNumber() {
             try {
-                return Long.parseLong(name);
+                return Long.parseUnsignedLong(name);
             } catch (NumberFormatException ignore) {
                 return null;
             }

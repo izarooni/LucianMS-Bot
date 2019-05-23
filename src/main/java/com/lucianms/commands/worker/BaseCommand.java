@@ -86,4 +86,13 @@ public abstract class BaseCommand {
     public final EmbedBuilder createEmbed() {
         return new EmbedBuilder().withColor(26, 188, 156);
     }
+
+    public final EmbedBuilder createEmbed(IEmbed bed) {
+        EmbedBuilder embed = new EmbedBuilder().withColor(bed.getColor());
+        if (bed.getTitle() != null) embed.withTitle(bed.getTitle());
+        if (bed.getDescription() != null) embed.withTitle(bed.getDescription());
+        if (bed.getFooter() != null) embed.withTitle(bed.getFooter().getText());
+        if (bed.getEmbedFields() != null) bed.getEmbedFields().forEach(embed::appendField);
+        return embed;
+    }
 }

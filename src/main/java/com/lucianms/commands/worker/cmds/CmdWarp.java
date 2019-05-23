@@ -35,7 +35,7 @@ public class CmdWarp extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
-            Long var_mapId = args[1].parseNumber();
+            Long var_mapId = args[1].parseUnsignedNumber();
             if (var_mapId == null) {
                 createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid number").build();
                 return;

@@ -38,7 +38,7 @@ public class CmdPermission extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length >= 3) {
             String action = args[0].toString();
-            Long ID = args[1].parseNumber();
+            Long ID = args[1].parseUnsignedNumber();
             String permission = args[2].toString();
             if (ID == null) {
                 List<IUser> mentions = event.getMessage().getMentions();

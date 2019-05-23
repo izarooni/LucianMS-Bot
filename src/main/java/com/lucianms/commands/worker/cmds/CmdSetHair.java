@@ -30,7 +30,7 @@ public class CmdSetHair extends BaseCommand {
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
-            Long var_hairId = args[1].parseNumber();
+            Long var_hairId = args[1].parseUnsignedNumber();
             if (var_hairId == null) {
                 new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel()).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
                 return;
