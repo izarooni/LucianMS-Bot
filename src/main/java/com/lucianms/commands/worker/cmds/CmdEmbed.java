@@ -42,12 +42,16 @@ public class CmdEmbed extends BaseCommand {
         if (embed == null) {
             if (command.args.length > 1) {
                 // quick embed
+                embed = createEmbed();
                 String message = command.concatFrom(0, " ");
                 int spIdx = message.indexOf('|');
-                String title = message.substring(0, spIdx);
-                String content = message.substring(spIdx);
-
-                embed = createEmbed().withTitle(title).withDescription(content);
+                if (spIdx >= 0) {
+                    String title = message.substring(0, spIdx);
+                    String content = message.substring(spIdx);
+                    embed.withTitle(title).withDescription(content);
+                } else {
+                    embed.withDescription(message);
+                }
                 createResponse(event).withEmbed(embed.build()).build();
             } else if (command.args.length == 1) {
                 Long ID = command.args[0].parseUnsignedNumber();
