@@ -47,7 +47,7 @@ public class CmdEmbed extends BaseCommand {
                 int spIdx = message.indexOf('|');
                 if (spIdx >= 0) {
                     String title = message.substring(0, spIdx);
-                    String content = message.substring(spIdx);
+                    String content = message.substring(spIdx + 1);
                     embed.withTitle(title).withDescription(content);
                 } else {
                     embed.withDescription(message);
