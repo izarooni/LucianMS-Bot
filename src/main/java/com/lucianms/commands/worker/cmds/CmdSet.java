@@ -12,7 +12,11 @@ import sx.blah.discord.util.EmbedBuilder;
 
 public class CmdSet extends BaseCommand {
 
-    private static final String CmdTicketDescription = "Modify settings for the ticket system";
+    private static final String CmdDescriptionStatus = "Modify the bot's Discord presence";
+    private static final String CmdDescriptionVote = "Modify server's vote URL";
+    private static final String CmdDescriptionName = "Modify the bot's Discord name";
+    private static final String CmdDescriptionApps = "Modify settings for the application system";
+    private static final String CmdDescriptionTicket = "Modify settings for the ticket system";
 
     public CmdSet(CommandUtil permission) {
         super(permission);
@@ -30,7 +34,7 @@ public class CmdSet extends BaseCommand {
                     .withTitle("How to use the command")
                     .appendField("description", getDescription(), false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <config>`")
-                    .appendDesc("\r\n`<config>` may be the following: status, gtop, name, apps and ticket");
+                    .appendDesc("\r\n`<config>` may be the following: `status`, `vote`, `name`, `apps` and `ticket`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
         }
@@ -57,7 +61,7 @@ public class CmdSet extends BaseCommand {
         if (command.args.length == 1) {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
+                    .appendField("description", CmdDescriptionStatus, false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <text>`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
@@ -71,7 +75,7 @@ public class CmdSet extends BaseCommand {
         if (command.args.length == 1) {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
+                    .appendField("description", CmdDescriptionVote, false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <URL>`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
@@ -87,7 +91,7 @@ public class CmdSet extends BaseCommand {
         if (command.args.length == 1) {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
+                    .appendField("description", CmdDescriptionName, false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" name <username>`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
@@ -102,7 +106,7 @@ public class CmdSet extends BaseCommand {
         if (command.args.length != 3) {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", CmdTicketDescription, false)
+                    .appendField("description", CmdDescriptionApps, false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <destination> <channel ID>`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
@@ -115,8 +119,8 @@ public class CmdSet extends BaseCommand {
         } else {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", CmdTicketDescription, false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <creation/destination> <channel ID>`");
+                    .appendField("description", CmdDescriptionApps, false)
+                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <destination> <channel ID>`");
             createResponse(event).withEmbed(embed.build()).build();
         }
     }
@@ -126,7 +130,7 @@ public class CmdSet extends BaseCommand {
         if (command.args.length != 3) {
             EmbedBuilder embed = createEmbed()
                     .withTitle("How to use the command")
-                    .appendField("description", CmdTicketDescription, false)
+                    .appendField("description", CmdDescriptionTicket, false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <creation/destination> <channel ID>`");
             createResponse(event).withEmbed(embed.build()).build();
             return;
@@ -146,7 +150,7 @@ public class CmdSet extends BaseCommand {
             default:
                 EmbedBuilder embed = createEmbed()
                         .withTitle("How to use the command")
-                        .appendField("description", CmdTicketDescription, false)
+                        .appendField("description", CmdDescriptionTicket, false)
                         .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <creation/destination> <channel ID>`");
                 createResponse(event).withEmbed(embed.build()).build();
                 break;
