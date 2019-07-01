@@ -113,7 +113,7 @@ public class Discord {
             Discord.getBot().login();
             LOGGER.info("Discord bot is now online");
 
-            TaskExecutor.executeLater(() -> ServerSession.connect(null), 10000);
+            ServerSession.connect(null);
 
             LOGGER.info("The server is now starting up!");
         } catch (DiscordException | IOException e) {

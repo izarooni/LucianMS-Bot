@@ -11,6 +11,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author izarooni
@@ -37,6 +39,9 @@ public class ServerSession {
                     if (promise != null) {
                         promise.success();
                     }
+                } else {
+                    LOGGER.info("Attempting to reconnect server in 10 seconds");
+                    future.channel().eventLoop().schedule(() -> connect(null), 10, TimeUnit.SECONDS);
                 }
             }
         });
