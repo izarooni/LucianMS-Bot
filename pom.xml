@@ -53,6 +53,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
         <dependency>
             <groupId>org.ini4j</groupId>

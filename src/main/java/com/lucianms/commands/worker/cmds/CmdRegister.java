@@ -1,5 +1,6 @@
 package com.lucianms.commands.worker.cmds;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
@@ -74,9 +75,10 @@ public class CmdRegister extends BaseCommand {
                                 }
                             }
                         }
+                        password = BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(10, password.toCharArray());
                         try (PreparedStatement ps = connection.prepareStatement("insert into accounts (name, password, discord_id) values (?, ?, ?)")) {
                             ps.setString(1, username);
-                            ps.setString(2, getHash(password));
+                            ps.setString(2, password);
                             ps.setLong(3, userID);
                             ps.executeUpdate();
                             EmbedBuilder embed = createEmbed()
@@ -102,16 +104,6 @@ public class CmdRegister extends BaseCommand {
                     .appendField("description", getDescription(), false)
                     .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <username> <password>`");
             createResponse(event).withEmbed(embed.build()).build();
-        }
-    }
-
-    private static String getHash(String password) {
-        try {
-            MessageDigest digester = MessageDigest.getInstance("SHA-1");
-            digester.update(password.getBytes(StandardCharsets.UTF_8), 0, password.length());
-            return HexUtil.toString(digester.digest()).replace(" ", "").toLowerCase();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Encoding the string failed", e);
         }
     }
 }
