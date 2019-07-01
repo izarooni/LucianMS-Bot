@@ -5,16 +5,12 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import com.lucianms.utils.HexUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -84,6 +80,7 @@ public class CmdRegister extends BaseCommand {
                             EmbedBuilder embed = createEmbed()
                                     .withTitle("Success!")
                                     .appendDesc("I made your account!! You may now login our game and create your character!")
+                                    .appendDesc("\r\nI've also bound your account so you don't have to worry about doing that silly !bind command")
                                     .appendDesc("\r\n**username**:").appendDesc(username);
                             createResponse(event).withEmbed(embed.build()).build();
                             LOGGER.info("Created account '{}'", username);
