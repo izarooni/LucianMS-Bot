@@ -34,6 +34,7 @@ public class SessionHandler extends ChannelInboundHandlerAdapter {
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Channel unregistered");
         ServerSession.setSession(null);
+        ServerSession.connect(null);
     }
 
     @Override

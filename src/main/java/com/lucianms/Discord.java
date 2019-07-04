@@ -113,6 +113,7 @@ public class Discord {
             Discord.getBot().login();
             LOGGER.info("Discord bot is now online");
 
+            LOGGER.info("Attempting connection to maple server");
             ServerSession.connect(null);
 
             LOGGER.info("The server is now starting up!");
