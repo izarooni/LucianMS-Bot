@@ -27,6 +27,7 @@ public class CmdBind extends BaseCommand {
     public void invoke(MessageReceivedEvent event, Command command) {
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {
+            event.getMessage().delete();
             if (ServerSession.getSession() == null) {
                 event.getChannel().sendMessage("Binding accounts is impossible because the server isn't even online right now!");
                 return;

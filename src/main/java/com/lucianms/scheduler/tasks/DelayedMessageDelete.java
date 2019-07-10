@@ -19,12 +19,7 @@ public class DelayedMessageDelete implements Runnable {
     @Override
     public void run() {
         for (IMessage message : messages) {
-            RequestBuffer.request(new RequestBuffer.IVoidRequest() {
-                @Override
-                public void doRequest() {
-                    message.getChannel().bulkDelete(Collections.singletonList(message));
-                }
-            });
+            RequestBuffer.request(() -> message.getChannel().bulkDelete(Collections.singletonList(message)));
         }
     }
 }
