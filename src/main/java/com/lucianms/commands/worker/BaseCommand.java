@@ -57,11 +57,12 @@ public abstract class BaseCommand {
         boolean isAdmin = channel.ofType(GuildChannel.class)
                 .flatMap(c -> c.getEffectivePermissions(author.map(User::getId).get()))
                 .map(set -> set.containsAll(PermissionSet.of(Permission.ADMINISTRATOR))).blockOptional().orElse(null);
+        if (isAdmin) return true;
 
         // is the message being created in a PrivateChannel
         if (channel.ofType(PrivateChannel.class).blockOptional().isPresent()) {
-            // only allow if the command can be used privately and user is authorized
-            return (!cmd.needsPermission || isAdmin) && (cmd.type == CommandType.Private || cmd.type == CommandType.Both);
+            // only allow if the command can be used privately and cmd doesn't require any permission
+            return !cmd.needsPermission && (cmd.type == CommandType.Private || cmd.type == CommandType.Both);
         }
         DGuild guild = event.getGuild().map(g -> Discord.getGuilds().get(g.getId().asString())).block();
         String authorID = author.map(User::getId).get().asString();
@@ -72,11 +73,18 @@ public abstract class BaseCommand {
             return true;
         }
 
-        return event.getGuild()
+        // if user has permission for the command
+        boolean userPermission = event.getGuild()
                 .map(g -> g.getRoles())
                 .flatMap(r -> r.collectList())
                 .map(c -> c.stream().anyMatch(r -> user.getPermissions().contains(r.getId().asString(), cmd)))
                 .blockOptional().orElse(false);
+        boolean guildPermission = event.getGuild()
+                .map(g -> g.getRoles())
+                .flatMap(r -> r.collectList())
+                .map(c -> c.stream().anyMatch(r -> guild.getPermissions().contains(r.getId().asString(), cmd)))
+                .blockOptional().orElse(false);
+        return userPermission || guildPermission;
     }
 
     /**
