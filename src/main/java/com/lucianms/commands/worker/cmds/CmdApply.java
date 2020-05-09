@@ -8,6 +8,7 @@ import com.lucianms.server.DGuild;
 import com.lucianms.server.user.DUser;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.entity.User;
 import reactor.core.publisher.Mono;
@@ -54,7 +55,8 @@ public class CmdApply extends BaseCommand {
         user.setApplicationResponses(responses);
         user.setApplicationStatus(0);
 
-        chm.blockOptional().ifPresent(c -> c.createMessage(m -> {
+        Mono<PrivateChannel> pchm = user.getUser().getPrivateChannel();
+        pchm.blockOptional().ifPresent(pch -> pch.createMessage(m -> {
             m.setContent("Please answer the following questions."
                     + "\r\nThe messages you send will be forwarded to the Chirithy staff where it will be reviewed and discussed."
                     + "\r\n\r\nWhen you are complete, say the word `send` then your application will be submitted."

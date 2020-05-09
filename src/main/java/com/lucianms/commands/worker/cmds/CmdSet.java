@@ -90,26 +90,18 @@ public class CmdSet extends BaseCommand {
 
     private void manageApplicationSystem(TextChannel ch, Command command) {
         DGuild guild = Discord.getGuild(ch.getGuild());
-        if (command.args.length != 3) {
+        if (command.args.length != 2) {
             ch.createEmbed(e -> {
                 e.setTitle("How to use the command");
                 e.addField("description", CmdDescriptionApps, false);
-                e.setDescription("\r\n**syntax**: `" + getName() + " <destination> <channel ID>`");
+                e.setDescription("\r\n**syntax**: `" + getName() + " apps <channel ID>`");
             }).block();
             return;
         }
-        String channelID = command.args[2].toString();
-        if ("destination".equals(command.args[1].toString())) {
-            guild.getGuildConfig().setCIDApplicationDestination(channelID);
-            guild.getGuildConfig().save(guild);
-            ch.createEmbed(e -> e.setDescription(String.format("Applications destination has been set to <#%s>", channelID))).block();
-        } else {
-            ch.createEmbed(e -> {
-                e.setTitle("How to use the command");
-                e.addField("description", CmdDescriptionApps, false);
-                e.setDescription("\r\n**syntax**: `" + getName() + " <destination> <channel ID>`");
-            }).block();
-        }
+        String channelID = command.args[1].toString();
+        guild.getGuildConfig().setCIDApplicationDestination(channelID);
+        guild.getGuildConfig().save(guild);
+        ch.createEmbed(e -> e.setDescription(String.format("Applications destination channel has been set to <#%s>", channelID))).block();
     }
 
     private void manageTicketSystem(TextChannel ch, Command command) {
