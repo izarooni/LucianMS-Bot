@@ -6,8 +6,8 @@ import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.TextChannel;
 
 /**
  * @author izarooni
@@ -24,7 +24,10 @@ public class CmdSearch extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        TextChannel ch = event.getMessage().getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length > 1) {
             String iType = args[0].toString();
@@ -32,18 +35,18 @@ public class CmdSearch extends BaseCommand {
 
             MaplePacketWriter writer = new MaplePacketWriter(1 + (iType.length() + message.length()));
             writer.write(Headers.Search.value);
-            writer.writeLong(event.getChannel().getLongID());
+            writer.writeLong(ch.getId().asLong());
             writer.writeMapleString(iType);
             writer.writeMapleString(message);
             ServerSession.sendPacket(writer.getPacket());
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <type> <name>`")
-                    .appendDesc("\r\n**example**: `").appendDesc(getName()).appendDesc(" item red potion`")
-                    .appendDesc("\r\nThe `<type>` parameter can be any of the following: `map`, `use`, `etc`, `cash`, `equip` or `mob`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <item> <name>`" +
+                        "\r\n**example**: `" + getName() + " item red potion`" +
+                        "\r\nThe `<type>` parameter can be any of the following: `map`, `use`,  `etc`, `cash`, `equip` or `mob`");
+            }).block();
         }
     }
 }

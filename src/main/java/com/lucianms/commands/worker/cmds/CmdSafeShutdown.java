@@ -1,13 +1,14 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.Command;
+import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IMessage;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 /**
  * @author izarooni
@@ -24,16 +25,19 @@ public class CmdSafeShutdown extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        IMessage message = event.getChannel().sendMessage("Stopping the server...");
-        try {
-            MaplePacketWriter writer = new MaplePacketWriter(1);
-            writer.write(Headers.Shutdown.value);
-            ServerSession.sendPacket(writer.getPacket());
-            message.edit("Complete... Goodbye!");
-        } catch (NullPointerException e) {
-            message.edit("No server connection established. Probably already shut down. Goodbye!");
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+        else if (ServerSession.getSession() == null) {
+            ch.createMessage("Unable to contact the server").block();
+            return;
         }
-        System.exit(0);
+
+        Message msg = ch.createMessage("Stopping the server...").block();
+        MaplePacketWriter writer = new MaplePacketWriter(1);
+        writer.write(Headers.Shutdown.value);
+        ServerSession.sendPacket(writer.getPacket());
+        msg.edit(m -> m.setContent("Server is now shutting down!")).block();
     }
 }

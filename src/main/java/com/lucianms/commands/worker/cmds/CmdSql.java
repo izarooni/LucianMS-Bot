@@ -4,8 +4,11 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
@@ -13,6 +16,8 @@ import java.sql.*;
  * @author izarooni
  */
 public class CmdSql extends BaseCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdSql.class);
 
     public CmdSql(CommandUtil permission) {
         super(permission);
@@ -24,7 +29,11 @@ public class CmdSql extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.getArgs();
         StringBuilder query = new StringBuilder();
         for (Command.CommandArg arg : args) {
@@ -44,11 +53,12 @@ public class CmdSql extends BaseCommand {
                         result.append(rs.getObject(i).toString()).append(" | ");
                     }
                 }
-                createResponse(event).withContent(result.toString(), MessageBuilder.Styles.CODE).build();
+                ch.createMessage("`" + result.toString() + "`").block();
                 result.setLength(0);
             }
         } catch (SQLException e) {
-            createResponse(event).withContent(e.toString()).build();
+            LOGGER.error("Failed SQL execution", e);
+            ch.createMessage("`" + e.toString() + "`").block();
         }
         query.setLength(0);
     }

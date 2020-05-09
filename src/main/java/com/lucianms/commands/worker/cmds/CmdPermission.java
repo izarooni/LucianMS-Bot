@@ -4,18 +4,21 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import com.lucianms.server.Guild;
-import com.lucianms.server.user.User;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import com.lucianms.server.DGuild;
+import com.lucianms.server.user.DUser;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
- * !permission give/revoke ID permission
+ * !permission add/remove ID permission
  * </p>
  *
  * @author izarooni
@@ -32,86 +35,51 @@ public class CmdPermission extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        Guild guild = Discord.getGuilds().get(event.getChannel().getGuild().getLongID());
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        Mono<MessageChannel> ch = message.getChannel();
+        Optional<User> author = message.getAuthor();
+        DGuild guild = Discord.getGuild(event.getGuild());
+        DUser user = guild.getUser(author.map(User::getId).get().asString());
 
+        TextChannel tch = ch.ofType(TextChannel.class).block();
         Command.CommandArg[] args = command.args;
         if (args.length >= 3) {
             String action = args[0].toString();
-            Long ID = args[1].parseUnsignedNumber();
-            String permission = args[2].toString();
-            if (ID == null) {
-                List<IUser> mentions = event.getMessage().getMentions();
-                if (!mentions.isEmpty()) {
-                    ID = mentions.get(0).getLongID();
-                } else {
-                    createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
-                    return;
-                }
-            }
-            if (guild.getGuild().getRoleByID(ID) != null) {
-                if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
-                    if (permission.equals("*")) {
-                        for (CommandUtil cperms : CommandUtil.values()) {
-                            guild.getPermissions().give(ID, cperms.name().toLowerCase());
-                        }
-                    } else {
-                        for (int i = 2; i < args.length; i++) {
-                            guild.getPermissions().give(ID, args[i].toString());
-                        }
-                    }
-                    guild.getPermissions().save();
-                    createResponse(event).appendContent("Success!").build();
-                } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
-                    if (permission.equals("*")) {
-                        for (CommandUtil cperms : CommandUtil.values()) {
-                            guild.getPermissions().revoke(ID, cperms.name().toLowerCase());
-                        }
-                    } else {
-                        for (int i = 2; i < args.length; i++) {
-                            guild.getPermissions().revoke(ID, args[i].toString());
-                        }
-                    }
-                    guild.getPermissions().save();
-                    createResponse(event).appendContent("Success!").build();
-                }
-            } else if (guild.getGuild().getUserByID(ID) != null) {
-                IUser iu = guild.getGuild().getUserByID(ID);
-                User target = guild.addUserIfAbsent(iu);
-                if (action.equalsIgnoreCase("give") || action.equalsIgnoreCase("add")) {
-                    if (permission.equals("*")) {
-                        for (CommandUtil cperms : CommandUtil.values()) {
-                            target.getPermissions().give(guild.getId(), cperms.name().toLowerCase());
-                        }
-                    } else {
-                        for (int i = 2; i < args.length; i++) {
-                            target.getPermissions().give(guild.getGuild().getLongID(), args[i].toString());
-                        }
-                    }
-                    target.getPermissions().save();
-                    createResponse(event).appendContent("Success!").build();
-                } else if (action.equalsIgnoreCase("revoke") || action.equalsIgnoreCase("remove")) {
-                    if (permission.equals("*")) {
-                        for (CommandUtil cperms : CommandUtil.values()) {
-                            target.getPermissions().revoke(guild.getId(), cperms.name().toLowerCase());
-                        }
-                    } else {
-                        for (int i = 2; i < args.length; i++) {
-                            target.getPermissions().revoke(guild.getGuild().getLongID(), args[i].toString());
-                        }
-                    }
-                    target.getPermissions().save();
-                    createResponse(event).appendContent("Success!").build();
-                }
-            } else {
-                createResponse(event).appendContent("Could not find a ROLE or USER with the specified ID").build();
+            Flux<CommandUtil> permissions;
+            if (args[1].toString().equals("*")) permissions = Flux.just(CommandUtil.values());
+            else permissions = Flux.fromArray(args[1].toString().split(","))
+                    .flatMap(s -> Flux.just(CommandUtil.fromName(s)));
+
+            if (action.equalsIgnoreCase("add")) {
+                message.getUserMentions()
+                        .flatMap(u -> Flux.just(guild.getGuild().getClient().getUserById((u.getId()))))
+                        .flatMap(u -> Flux.just(guild.addUserIfAbsent(u.block())))
+                        .subscribe(u -> {
+                            permissions.subscribe(c -> u.getPermissions().give(guild.getId().asString(), c));
+                            u.getPermissions().save();
+                        });
+                message.getRoleMentionIds().forEach(roleID -> permissions.subscribe(c -> guild.getPermissions().give(roleID.asString(), c)));
+                guild.getPermissions().save();
+                tch.createMessage("Success!").block();
+            } else if (action.equalsIgnoreCase("remove")) {
+                message.getUserMentions()
+                        .flatMap(u -> Flux.just(guild.getGuild().getClient().getUserById((u.getId()))))
+                        .flatMap(u -> Flux.just(guild.addUserIfAbsent(u.block())))
+                        .subscribe(u -> {
+                            permissions.subscribe(c -> u.getPermissions().give(guild.getId().asString(), c));
+                            u.getPermissions().save();
+                        });
+                message.getRoleMentionIds().forEach(id -> permissions.subscribe(c -> guild.getPermissions().revoke(id.asString(), c)));
+                guild.getPermissions().save();
+                tch.createMessage("Success!").block();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: ").appendDesc(getName()).appendDesc(" <add/remove> <role/user ID> <permission/*>");
-            createResponse(event).withEmbed(embed.build()).build();
+            tch.createEmbed(c -> {
+                c.setTitle("How to use the command");
+                c.addField("description", getDescription(), false);
+                c.setDescription(String.format("\r\n**syntax**: %s <add/remove> <permissions/*> <role/user>", getName()));
+            }).block();
         }
     }
 }

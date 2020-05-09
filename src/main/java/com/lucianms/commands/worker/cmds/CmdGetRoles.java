@@ -3,9 +3,10 @@ package com.lucianms.commands.worker.cmds;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.util.EmbedBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.MessageChannel;
+import reactor.core.publisher.Mono;
 
 public class CmdGetRoles extends BaseCommand {
 
@@ -19,11 +20,15 @@ public class CmdGetRoles extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        EmbedBuilder embed = createEmbed();
-        for (IRole role : event.getGuild().getRoles()) {
-            embed.appendDesc(String.format("`%d` - %s\r\n", role.getLongID(), role.getName()));
-        }
-        createResponse(event).withEmbed(embed.build()).build();
+    public void invoke(MessageCreateEvent event, Command command) {
+        Mono<MessageChannel> ch = event.getMessage().getChannel();
+
+        ch.blockOptional().ifPresent(c -> c.createEmbed(e -> {
+            StringBuilder sb = new StringBuilder();
+            event.getGuild()
+                    .map(Guild::getRoles).blockOptional()
+                    .ifPresent(rf -> rf.subscribe(r -> sb.append(String.format("`%s` - %s\r\n", r.getId().asString(), r.getName()))));
+            e.setDescription(sb.toString());
+        }).block());
     }
 }

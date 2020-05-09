@@ -1,11 +1,13 @@
 package com.lucianms.utils;
 
+import com.lucianms.commands.worker.CommandUtil;
+import discord4j.core.object.DiscordObject;
+import discord4j.core.object.entity.Entity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.obj.IDiscordObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,28 +25,28 @@ public class Permissions {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Permissions.class);
 
-    private final IDiscordObject object;
-    private ConcurrentHashMap<Long, ArrayList<String>> permissions = new ConcurrentHashMap<>();
+    private final Entity entity;
+    private ConcurrentHashMap<String, ArrayList<CommandUtil>> permissions = new ConcurrentHashMap<>();
 
-    public Permissions(IDiscordObject object) {
-        this.object = object;
+    public Permissions(Entity entity) {
+        this.entity = entity;
     }
 
     public void save() {
-        String dir = "permissions/" + this.object.getClass().getSimpleName();
+        String dir = "permissions/" + entity.getClass().getSimpleName();
         if (new File(dir).mkdirs()) {
             LOGGER.info("Created directory {}", dir);
         }
-        String file = dir + "/" + this.object.getLongID() + ".json";
+        String file = dir + "/" + entity.getId().asLong() + ".json";
 
         JSONObject object = new JSONObject();
         JSONObject perms = new JSONObject();
-        for (Map.Entry<Long, ArrayList<String>> entry : permissions.entrySet()) {
+        for (Map.Entry<String, ArrayList<CommandUtil>> entry : permissions.entrySet()) {
             JSONArray array = new JSONArray();
-            for (String s : entry.getValue()) {
-                array.put(s);
+            for (CommandUtil s : entry.getValue()) {
+                array.put(s.name());
             }
-            perms.put(entry.getKey().toString(), array);
+            perms.put(entry.getKey(), array);
         }
         object.put("permissions", perms);
 
@@ -53,17 +55,17 @@ public class Permissions {
             fos.write(output.getBytes());
             fos.flush();
         } catch (IOException e) {
-            LOGGER.info("Unable to save permissions for '{}'", this.object.getLongID());
+            LOGGER.info("Unable to save permissions for '{}'", entity.getId().asString());
             e.printStackTrace();
         }
     }
 
     public void load() {
-        String dir = "permissions/" + this.object.getClass().getSimpleName();
+        String dir = "permissions/" + entity.getClass().getSimpleName();
         if (new File(dir).mkdirs()) {
             LOGGER.info("Created directory {}", dir);
         }
-        String file = dir + "/" + this.object.getLongID() + ".json";
+        String file = dir + "/" + entity.getId().asString() + ".json";
         try {
             File p = new File(file);
             if (!p.exists()) {
@@ -78,39 +80,39 @@ public class Permissions {
                     String key = (String) iter.next();
                     JSONArray array = (JSONArray) perms.get(key);
                     for (int i = 0; i < array.length(); i++) {
-                        give(Long.parseLong(key), (String) array.get(i));
+                        give(key, CommandUtil.fromName((String) array.get(i)));
                     }
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Unable to load permissions for '{}'", this.object.getLongID());
+            LOGGER.error("Unable to load permissions for '{}'", entity.getId().asString());
             e.printStackTrace();
         }
     }
 
-    public IDiscordObject getObject() {
-        return object;
+    public DiscordObject getEntity() {
+        return entity;
     }
 
-    private ArrayList<String> getByKey(Long key) {
+    private ArrayList<CommandUtil> getByKey(String key) {
         return permissions.computeIfAbsent(key, k -> new ArrayList<>());
     }
 
-    public boolean contains(Long key, String permission) {
+    public boolean contains(String key, CommandUtil permission) {
         return getByKey(key).contains(permission);
     }
 
-    public boolean give(Long key, String permission) {
-        ArrayList<String> perms = getByKey(key);
+    public boolean give(String key, CommandUtil permission) {
+        ArrayList<CommandUtil> perms = getByKey(key);
         if (!perms.contains(permission)) {
             return perms.add(permission);
         } else {
-            LOGGER.warn("'{}' {} already has permission {} in key {}", object.getClass().getSimpleName(), object.getLongID(), permission, key);
+            LOGGER.info("{} {} already has permission {} with key {}", entity.getClass().getSimpleName(), entity.getId(), permission, key);
         }
         return false;
     }
 
-    public boolean revoke(Long key, String permission) {
+    public boolean revoke(String key, CommandUtil permission) {
         return getByKey(key).remove(permission);
     }
 }

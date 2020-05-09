@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Main-Class: com.lucianms.Discord
+Class-Path: jackson-databind-2.10.3.jar netty-transport-4.1.48.Final.jar
+  slf4j-simple-1.7.25.jar reactor-core-3.2.16.RELEASE.jar netty-buffer-4
+ .1.48.Final.jar netty-handler-4.1.48.Final.jar ini4j-0.5.4.jar reactor-
+ extra-3.2.4.RELEASE.jar jackson-annotations-2.10.3.jar netty-resolver-4
+ .1.48.Final.jar netty-codec-http2-4.1.48.Final.jar slf4j-api-1.7.25.jar
+  jackson-core-2.10.3.jar discord4j-common-3.0.14.jar discord4j-rest-3.0
+ .14.jar protobuf-java-3.6.1.jar reactive-streams-1.0.2.jar discord4j-vo
+ ice-3.0.14.jar stores-api-3.0.14.jar reactor-netty-0.8.17.RELEASE.jar d
+ iscord4j-core-3.0.14.jar netty-transport-native-epoll-4.1.48.Final-linu
+ x-x86_64.jar jackson-datatype-jdk8-2.10.3.jar stores-jdk-3.0.14.jar net
+ ty-codec-socks-4.1.48.Final.jar Servicer-1.0.0.jar HikariCP-3.2.0.jar f
+ lyway-core-5.2.4.jar simple-fsm-1.0.1.jar discord4j-gateway-3.0.14.jar 
+ netty-transport-native-unix-common-4.1.48.Final.jar netty-codec-http-4.
+ 1.48.Final.jar mysql-connector-java-8.0.15.jar netty-common-4.1.48.Fina
+ l.jar netty-codec-4.1.48.Final.jar bytes-1.1.0.jar bcrypt-0.8.0.jar net
+ ty-handler-proxy-4.1.48.Final.jar
+

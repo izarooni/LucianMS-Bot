@@ -5,11 +5,12 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,30 +32,34 @@ public class CmdRegister extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        IChannel channel = event.getChannel();
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
         Command.CommandArg[] args = command.getArgs();
+        String discordID = message.getAuthor().map(User::getId).get().asString();
+
 
         if (args.length == 2) {
-            long userID = event.getAuthor().getLongID();
             String username = args[0].toString();
             String password = args[1].toString();
             if (!username.matches(Pattern.compile("[a-zA-Z0-9]{4,}").pattern())) {
-                channel.sendMessage("Please make sure your username contains only alpha-numeric characters");
+                ch.createMessage("Please make sure your username contains only alpha-numeric characters").block();
                 return;
             }
             if (username.length() >= 4 && username.length() <= 13) {
                 if (password.length() >= 6) {
                     try (Connection connection = Discord.getMapleConnection()) {
                         try (PreparedStatement ps = connection.prepareStatement("select name from accounts where discord_id = ?")) {
-                            ps.setLong(1, userID);
+                            ps.setString(1, discordID);
                             try (ResultSet rs = ps.executeQuery()) {
                                 if (rs.next()) {
-                                    EmbedBuilder embed = createEmbed()
-                                            .withTitle("You have already registered!")
-                                            .appendDesc("It seems that you have already registered an account. That means you can play! So, what are you waiting for?")
-                                            .appendField("username", rs.getString("name"), false);
-                                    createResponse(event).withEmbed(embed.build()).build();
+                                    String accountName = rs.getString("name");
+                                    ch.createEmbed(e -> {
+                                        e.setTitle("You have already registered!");
+                                        e.addField("username", accountName, false);
+                                        e.setDescription("It seems that you have already registered an account. That means you can play! So, what are you waiting for?");
+                                    }).block();
                                     return;
                                 }
                             }
@@ -63,10 +68,10 @@ public class CmdRegister extends BaseCommand {
                             ps.setString(1, username);
                             try (ResultSet rs = ps.executeQuery()) {
                                 if (rs.next() && rs.getInt("total") != 0) {
-                                    EmbedBuilder embed = createEmbed()
-                                            .withTitle("Too slow!")
-                                            .appendDesc("It seems that name is already being used. Please try another one!");
-                                    createResponse(event).withEmbed(embed.build()).build();
+                                    ch.createEmbed(e -> {
+                                        e.setTitle("Too slow!");
+                                        e.setDescription("It seems that name is already being used. Please try another one!");
+                                    }).block();
                                     return;
                                 }
                             }
@@ -75,32 +80,32 @@ public class CmdRegister extends BaseCommand {
                         try (PreparedStatement ps = connection.prepareStatement("insert into accounts (name, password, discord_id) values (?, ?, ?)")) {
                             ps.setString(1, username);
                             ps.setString(2, password);
-                            ps.setLong(3, userID);
+                            ps.setString(3, discordID);
                             ps.executeUpdate();
-                            EmbedBuilder embed = createEmbed()
-                                    .withTitle("Success!")
-                                    .appendDesc("I made your account!! You may now login our game and create your character!")
-                                    .appendDesc("\r\nI've also bound your account so you don't have to worry about doing that silly !bind command")
-                                    .appendDesc("\r\n**username**:").appendDesc(username);
-                            createResponse(event).withEmbed(embed.build()).build();
+                            ch.createEmbed(e -> {
+                                e.setTitle("Success!");
+                                e.setDescription("I made your account!! You may now login our game and create your character!"
+                                        + "\r\nI've also bound your account so you don't have to worry about doing that silly !bind command"
+                                        + "\r\n**username**:" + username);
+                            }).block();
                             LOGGER.info("Created account '{}'", username);
                         }
                     } catch (SQLException e) {
-                        channel.sendMessage("Wait what? An error occurred. Please the let the developer know ASAP!");
-                        e.printStackTrace();
+                        LOGGER.error("Failed to register an account", e);
+                        ch.createMessage("Oops! Something wrong happened!").block();
                     }
                 } else {
-                    channel.sendMessage("That password is too short!");
+                    ch.createMessage("The password is too short.").block();
                 }
             } else {
-                channel.sendMessage("That username is either too short or too long");
+                ch.createMessage("The username is too short or too long.").block();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <username> <password>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <username> <password>`");
+            }).block();
         }
     }
 }

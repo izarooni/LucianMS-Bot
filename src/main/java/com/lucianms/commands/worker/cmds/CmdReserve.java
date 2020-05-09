@@ -4,9 +4,9 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,7 +25,11 @@ public class CmdReserve extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String account = args[0].toString();
@@ -36,10 +40,7 @@ public class CmdReserve extends BaseCommand {
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
                             if (rs.getInt("total") != 0) {
-                                createResponse(event)
-                                        .appendContent("The username ")
-                                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                        .appendContent(" is already being used by an existing player").build();
+                                ch.createMessage("The username `" + username + "` is already being used.").block();
                                 return;
                             }
                         }
@@ -50,10 +51,7 @@ public class CmdReserve extends BaseCommand {
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
                             if (rs.getInt("total") != 1) {
-                                createResponse(event)
-                                        .appendContent("No such account with the username ")
-                                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                        .appendContent(" but I will reserve it anyways").build();
+                                ch.createMessage("Could not find an account named `" + username + "` but will reserve it anyways.").block();
                             }
                         }
                     }
@@ -62,18 +60,14 @@ public class CmdReserve extends BaseCommand {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
-                            createResponse(event)
-                                    .appendContent("The username ")
-                                    .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                    .appendContent(" is already reserved by the user ")
-                                    .appendContent(rs.getString("username"), MessageBuilder.Styles.INLINE_CODE).build();
+                            ch.createMessage("The username `" + username + "` is already reserved by account `" + rs.getString("username") + "`");
                             return;
                         }
                     }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                event.getChannel().sendMessage("An error occurred while trying to find that account");
+                ch.createMessage("An error occurred while trying to find that account.").block();
                 return;
             }
             try (Connection con = Discord.getMapleConnection();
@@ -81,14 +75,10 @@ public class CmdReserve extends BaseCommand {
                 ps.setString(1, account);
                 ps.setString(2, username);
                 ps.executeUpdate();
-                createResponse(event)
-                        .appendContent("IGN ")
-                        .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                        .appendContent(" reserved for the user ")
-                        .appendContent(account, MessageBuilder.Styles.INLINE_CODE).build();
+                ch.createMessage("IGN `" + username + "` reserved for account `" + account + "`").block();
             } catch (SQLException e) {
                 e.printStackTrace();
-                event.getChannel().sendMessage("An error occurred.");
+                ch.createMessage("An error ocurred while trying to reserve the IGN.").block();
             }
         } else if (args.length == 1) {
             String username = args[0].toString();
@@ -101,24 +91,20 @@ public class CmdReserve extends BaseCommand {
                         sb.append(rs.getString("reserve")).append("\r\n");
                     }
                     if (sb.length() == 0) {
-                        event.getChannel().sendMessage("There is no igns reserved to the username");
+                        ch.createMessage("There is no IGNs reserved with that username").block();
                     } else {
-                        createResponse(event)
-                                .appendContent("The username(s) reserved by ")
-                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                .appendContent(" ")
-                                .appendContent(sb.toString(), MessageBuilder.Styles.CODE).build();
+                        ch.createMessage("The username(s) resvered by `" + username + "` `" + sb.toString() + "`").block();
                     }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <account name> <ign>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <account name> <IGN>`");
+            }).block();
         }
     }
 }

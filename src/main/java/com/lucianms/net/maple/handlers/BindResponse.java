@@ -2,10 +2,9 @@ package com.lucianms.net.maple.handlers;
 
 import com.lucianms.Discord;
 import com.lucianms.utils.packet.receive.MaplePacketReader;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 
 /**
  * @author izarooni
@@ -18,25 +17,22 @@ public class BindResponse extends DiscordResponse {
         long authorId = reader.readLong();
         byte result = reader.readByte();
 
-        IChannel channel = Discord.getBot().getClient().getChannelByID(channelId);
-        IUser author = Discord.getBot().getClient().getUserByID(authorId);
-
-        if (author != null && channel != null) {
+        TextChannel ch = Discord.getBot().getClient().getChannelById(Snowflake.of(channelId)).ofType(TextChannel.class).blockOptional().orElse(null);
+        User user = Discord.getBot().getClient().getUserById(Snowflake.of(authorId)).blockOptional().orElse(null);
+        if (user != null && ch != null) {
             if (result == 1) {
-                channel.sendMessage(author.mention() + " check your DMs! Don't leave me hanging~");
                 String key = reader.readMapleAsciiString();
                 String accountUsername = reader.readMapleAsciiString();
-                IPrivateChannel dm = Discord.getBot().getClient().getOrCreatePMChannel(author);
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(dm).appendContent("Hey there! I see you're trying to bind the account ").appendContent(accountUsername, MessageBuilder.Styles.INLINE_CODE).appendContent(". If it's truly yours, go ahead and shout this message to the world in-game on any character belonging to that account").appendCode("", key).build();
+                user.getPrivateChannel().blockOptional().ifPresent(pch -> {
+                    pch.createMessage("Hey there! I see you're trying to bind the account `" + accountUsername + "`. If it's truly yours, go ahead an shit this code to the world in-game on any character belonging to that account\r\n```" + key + "```").block();
+                    ch.createMessage("<@" + user.getId().asString() + "> check your DMs! Don't leave me hanging~").block();
+                });
             } else if (result == 2) {
-                String accountUsername = reader.readMapleAsciiString();
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(channelId).appendContent("Oh? Looks like the account ").appendContent(accountUsername, MessageBuilder.Styles.INLINE_CODE).appendContent(" is already bound to a Discord account").build();
+                ch.createMessage("<@" + user.getId().asString() + "> that account is already bound to a Discord account.").blockOptional();
             } else if (result == 3) {
-                IPrivateChannel dm = Discord.getBot().getClient().getOrCreatePMChannel(author);
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(dm).appendContent("Success! Your in-game account is now bound to your Discord account.").build();
+                user.getPrivateChannel().blockOptional().ifPresent(pch -> pch.createMessage("Success! Your Chirithy and Discord account are now bound.").block());
             } else {
-                String accountUsername = reader.readMapleAsciiString();
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(channel).appendContent("The account ").appendContent(accountUsername, MessageBuilder.Styles.INLINE_CODE).appendContent(" does not exist, or does not have any characters online").build();
+                ch.createMessage("The account does not exist or does not have any characters online.").block();
             }
         }
     }

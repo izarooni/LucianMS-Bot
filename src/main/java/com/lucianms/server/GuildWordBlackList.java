@@ -9,14 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class GuildWordBlackList extends ArrayList<String> implements Saveable<Guild> {
+public class GuildWordBlackList extends ArrayList<String> implements Saveable<DGuild> {
 
     @Override
-    public boolean save(Guild guild) {
+    public boolean save(DGuild guild) {
         try (Connection con = Discord.getDiscordConnection()) {
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement("delete from forbidden_words where guild_id = ?")) {
-                ps.setLong(1, guild.getId());
+                ps.setString(1, guild.getId().asString());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 getLogger().error("Failed to clear forbidden words for guild {}", guild.toString());
@@ -25,7 +25,7 @@ public class GuildWordBlackList extends ArrayList<String> implements Saveable<Gu
             ArrayList<String> blacklistedWords = guild.getGuildConfig().getWordBlackList();
             if (!blacklistedWords.isEmpty()) {
                 try (PreparedStatement ps = con.prepareStatement("insert into forbidden_words values (?, ?)")) {
-                    ps.setLong(1, guild.getId());
+                    ps.setString(1, guild.getId().asString());
                     for (String word : blacklistedWords) {
                         ps.setString(2, word);
                         ps.addBatch();
@@ -45,10 +45,10 @@ public class GuildWordBlackList extends ArrayList<String> implements Saveable<Gu
     }
 
     @Override
-    public boolean load(Guild guild) {
+    public boolean load(DGuild guild) {
         try (Connection con = Discord.getDiscordConnection()) {
             try (PreparedStatement ps = con.prepareStatement("select word from forbidden_words where guild_id = ?")) {
-                ps.setLong(1, guild.getId());
+                ps.setString(1, guild.getId().asString());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         add(rs.getString("word"));

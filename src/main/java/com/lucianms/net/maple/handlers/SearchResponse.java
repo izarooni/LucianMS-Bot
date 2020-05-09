@@ -1,9 +1,6 @@
 package com.lucianms.net.maple.handlers;
 
-import com.lucianms.Discord;
 import com.lucianms.utils.packet.receive.MaplePacketReader;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.util.MessageBuilder;
 
 /**
  * @author izarooni
@@ -14,22 +11,18 @@ public class SearchResponse extends DiscordResponse {
         long channelID = reader.readLong();
         int count = reader.readInt();
 
-        IChannel channel = Discord.getBot().getClient().getChannelByID(channelID);
-
         if (count < 0) {
-            channel.sendMessage(reader.readMapleAsciiString());
+            createEmbedResponse(channelID, e -> e.setDescription(reader.readMapleAsciiString()));
         } else {
-            MessageBuilder mb = new MessageBuilder(Discord.getBot().getClient()).withChannel(channel);
             StringBuilder sb = new StringBuilder();
+            sb.append("```\r\n");
             for (int i = 0; i < count; i++) {
                 sb.append(reader.readMapleAsciiString()).append("\r\n");
             }
-            mb.appendCode("", sb.toString());
-            if (mb.getContent().length() < 2000) {
-                mb.build();
-            } else {
-                channel.sendMessage("There are too many results to display. Please be more specific with your search query");
-            }
+            sb.append("```");
+            if (sb.length() < 2000) createMessageResponse(channelID, e -> e.setContent(sb.toString()));
+            else
+                createMessageResponse(channelID, e -> e.setContent("There are too many results. Please be more specific with your search."));
         }
     }
 }

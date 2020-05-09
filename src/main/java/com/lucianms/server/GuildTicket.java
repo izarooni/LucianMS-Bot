@@ -3,12 +3,12 @@ package com.lucianms.server;
 public class GuildTicket {
 
     private final int ticketID;
-    private final long userID;
-    private final long destinationMessageID;
-    private final long creationMessageID;
+    private final String userID;
+    private final String destinationMessageID;
+    private final String creationMessageID;
     private boolean completed;
 
-    public GuildTicket(int ticketID, long userID, long destinationMessageID, long creationMessageID) {
+    public GuildTicket(int ticketID, String userID, String destinationMessageID, String creationMessageID) {
         this.ticketID = ticketID;
         this.userID = userID;
         this.destinationMessageID = destinationMessageID;
@@ -19,15 +19,15 @@ public class GuildTicket {
         return ticketID;
     }
 
-    public long getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public long getDestinationMessageID() {
+    public String getDestinationMessageID() {
         return destinationMessageID;
     }
 
-    public long getCreationMessageID() {
+    public String getCreationMessageID() {
         return creationMessageID;
     }
 

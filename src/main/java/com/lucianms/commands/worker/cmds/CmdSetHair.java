@@ -1,15 +1,14 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 /**
  * @author izarooni
@@ -26,28 +25,32 @@ public class CmdSetHair extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
             Long var_hairId = args[1].parseUnsignedNumber();
             if (var_hairId == null) {
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel()).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
+                ch.createEmbed(e -> e.setDescription(String.format("`%s` is not a valid ID", args[1].toString()))).block();
                 return;
             }
             int hairId = var_hairId.intValue();
             MaplePacketWriter writer = new MaplePacketWriter(1 + username.length());
             writer.write(Headers.SetHair.value);
-            writer.writeLong(event.getChannel().getLongID());
+            writer.writeLong(ch.getId().asLong());
             writer.writeMapleString(username);
             writer.writeInt(hairId);
             ServerSession.sendPacket(writer.getPacket());
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <hair ID>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <ign> <hair ID>`");
+            }).block();
         }
     }
 }

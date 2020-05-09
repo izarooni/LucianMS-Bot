@@ -2,9 +2,11 @@ package com.lucianms.net.maple.handlers;
 
 import com.lucianms.Discord;
 import com.lucianms.utils.packet.receive.MaplePacketReader;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IPrivateChannel;
-import sx.blah.discord.handle.obj.IUser;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
+import reactor.core.publisher.Mono;
 
 /**
  * @author izarooni
@@ -18,23 +20,23 @@ public class DisconnectResponse extends DiscordResponse {
         byte disconnectResult = reader.readByte();
 
         if (privateChannel) {
-            IUser user = Discord.getBot().getClient().getUserByID(ID);
-            if (user != null) {
-                IPrivateChannel channel = Discord.getBot().getClient().getOrCreatePMChannel(user);
+            Mono<User> user = Discord.getBot().getClient().getUserById(Snowflake.of(ID));
+            if (user.blockOptional().isPresent()) {
+                PrivateChannel dm = user.block().getPrivateChannel().block();
                 if (disconnectResult == 0) {
-                    channel.sendMessage("Successfully disconnected " + reader.readMapleAsciiString());
+                    dm.createMessage("Successfully disconnected `" + reader.readMapleAsciiString() + "`").block();
                 } else if (disconnectResult == 2) {
-                    channel.sendMessage("I wasn't able to find an account bound to your Discord account");
+                    dm.createMessage("You have not bound your Discord account.").block();
                 }
             }
         } else {
-            IChannel channel = Discord.getBot().getClient().getChannelByID(ID);
+            Mono<TextChannel> chm = Discord.getBot().getClient().getChannelById(Snowflake.of(ID)).ofType(TextChannel.class);
             if (disconnectResult == 0) {
-                channel.sendMessage("Successfully disconnected");
+                chm.blockOptional().ifPresent(ch -> ch.createMessage("Successfully disconnected").block());
             } else if (disconnectResult == 1) {
-                channel.sendMessage("Unable to find any player");
+                chm.blockOptional().ifPresent(ch -> ch.createMessage("Unable to find the player").block());
             } else {
-                channel.sendMessage("An error occurred");
+                chm.blockOptional().ifPresent(ch -> ch.createMessage("An error occurred").block());
             }
         }
     }

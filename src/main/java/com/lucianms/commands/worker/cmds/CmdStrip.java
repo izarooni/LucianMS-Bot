@@ -4,10 +4,11 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,12 +35,15 @@ public class CmdStrip extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {
-            EmbedBuilder embed = createEmbed();
             String username = args[0].toString();
-            embed.withTitle("Stripping " + username + "...");
+            StringBuilder sb = new StringBuilder();
             try (Connection connection = Discord.getMapleConnection()) {
                 int playerId; // id of the player
                 int equipSlots; // total slots the player has
@@ -55,8 +59,7 @@ public class CmdStrip extends BaseCommand {
                             equipSlots = rs.getInt("equipslots");
                             playerId = rs.getInt("id");
                         } else {
-                            embed.appendDesc("\r\nFailed you find a player named `").appendDesc(username).appendDesc("`");
-                            createResponse(event).withEmbed(embed.build()).build();
+                            ch.createEmbed(e -> e.setDescription("Failed to find any player named `" + username + "`")).block();
                             return;
                         }
                     }
@@ -75,12 +78,12 @@ public class CmdStrip extends BaseCommand {
                             pets.executeBatch();
                         }
                         if (count > 0) {
-                            embed.appendDesc("\r\nUnequipped `").appendDesc(Integer.toString(count)).appendDesc("` pets");
+                            sb.append("\r\nUnequipped `").append(Integer.toString(count)).append("` pets");
                         }
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Failed to un-equip pets", e);
-                    embed.appendDesc("\r\nFailed to unequip pets");
+                    sb.append("\r\nFailed to unequip pets");
                 }
                 // get item count of equipped items
                 try (PreparedStatement ps = connection.prepareStatement("select count(*) as total from inventoryitems where characterid = ? and inventorytype = -1")) {
@@ -92,7 +95,7 @@ public class CmdStrip extends BaseCommand {
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Failed to get item count for equipped items", e);
-                    embed.appendDesc("\r\nFailed to get item count for equipped items");
+                    sb.append("\r\nFailed to get item count for equipped items");
                 }
                 // get item count in equip inventory
                 try (PreparedStatement ps = connection.prepareStatement("select count(*) as total from inventoryitems where characterid = ? and inventorytype = 1")) {
@@ -104,7 +107,7 @@ public class CmdStrip extends BaseCommand {
                     }
                 } catch (SQLException e) {
                     LOGGER.error("Failed to determine slot count for the equip tab", e);
-                    embed.appendDesc("\r\nFailed to get slot count for the equip tab");
+                    sb.append("\r\nFailed to get slot count for the equip tab");
                 }
                 // transfer equips to inventory
                 if (inventoryItems + equippedItems <= equipSlots) {
@@ -124,8 +127,11 @@ public class CmdStrip extends BaseCommand {
                         }
                     }
                     if (equipped.isEmpty()) {
-                        embed.appendDesc("\r\nFailed to find any equips on this character");
-                        createResponse(event).withEmbed(embed.build()).build();
+                        sb.append("\r\nFailed to find any equips on this character");
+                        ch.createEmbed(e -> {
+                            e.setTitle("Stripping " + username + "...");
+                            e.setDescription(sb.toString());
+                        }).block();
                         return;
                     }
                     // get used inventory slots
@@ -143,7 +149,7 @@ public class CmdStrip extends BaseCommand {
                             Optional<Map.Entry<Integer, Integer>> optional = equip.entrySet().stream().filter(e -> e.getValue() == null).findFirst(); // find first available slot in inventory
                             if (!optional.isPresent()) { // if there are no empty slots...
                                 LOGGER.warn("Unable to transfer equipped inventory item (id:{}) to inventory", entry.getValue());
-                                createResponse(event).appendContent("A processing error(1) occurred").build();
+                                ch.createEmbed(e -> e.setDescription("A processing error(1) occurred")).block();
                                 // no more empty slots
                                 return;
                             }
@@ -154,25 +160,30 @@ public class CmdStrip extends BaseCommand {
                             ps.addBatch();
                         }
                         ps.executeBatch();
-                        embed.appendDesc("\r\n`").appendDesc(Integer.toString(equipped.size())).appendDesc("` items moved");
-                        createResponse(event).withEmbed(embed.build()).build();
+                        sb.append("\r\n`").append(Integer.toString(equipped.size())).append("` items moved");
+                        ch.createEmbed(e -> {
+                            e.setTitle("Stripping " + username + "...");
+                            e.setDescription(sb.toString());
+                        }).block();
                     }
                     equip.clear();
                     equipped.clear();
                 } else {
-                    embed.appendDesc("Failed to strip. The inventory would overflow with items");
-                    createResponse(event).withEmbed(embed.build()).build();
+                    ch.createEmbed(e -> {
+                        e.setTitle("Stripping " + username + "...");
+                        e.setDescription("Failed to strip. The inventory would overflow with items.");
+                    }).block();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                createResponse(event).appendContent("A processing error(2) occurred").build();
+            } catch (SQLException ex) {
+                LOGGER.error("Failed to strip a character", ex);
+                ch.createEmbed(e -> e.setDescription("A processing error(2) occurred")).block();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <ign>`");
+            }).block();
         }
     }
 }

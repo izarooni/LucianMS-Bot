@@ -6,13 +6,16 @@ import com.lucianms.commands.CommandType;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandExecutor;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.RequestBuffer;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.User;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author izarooni
@@ -34,25 +37,33 @@ public class CmdHelp extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        EmbedBuilder embed = createEmbed().withTitle("Available Commands");
-        for (Map.Entry<CommandCategory, ArrayList<CommandUtil>> entry : COMMANDS.entrySet()) {
-            StringBuilder sb = new StringBuilder();
-            for (CommandUtil perms : entry.getValue()) {
-                if (perms.type == CommandType.Both
-                        || (perms.type == CommandType.Private && event.getChannel().isPrivate())
-                        || (perms.type == CommandType.Public && !event.getChannel().isPrivate())) {
-                    BaseCommand cmd = CommandExecutor.getCommand(perms.name().toLowerCase());
-                    if (!cmd.getPermission().requirePermission || canExecute(event, perms)) {
-                        sb.append("**").append(cmd.getName()).append("** - ").append(cmd.getDescription()).append("\r\n");
+    public void invoke(MessageCreateEvent event, Command command) {
+        Mono<MessageChannel> chm = event.getMessage().getChannel();
+        Optional<User> author = event.getMessage().getAuthor();
+        MessageChannel ch = chm.blockOptional().orElse(null);
+        if (ch == null) return;
+
+        boolean isPrivate = chm.ofType(PrivateChannel.class).blockOptional().isPresent();
+
+        ch.createEmbed(e -> {
+            e.setTitle("Available commands");
+            for (Map.Entry<CommandCategory, ArrayList<CommandUtil>> entry : COMMANDS.entrySet()) {
+                StringBuilder sb = new StringBuilder();
+                for (CommandUtil perms : entry.getValue()) {
+                    if (perms.type == CommandType.Both
+                            || (perms.type == CommandType.Private && isPrivate)
+                            || (perms.type == CommandType.Public && !isPrivate)) {
+                        BaseCommand cmd = CommandExecutor.getCommand(perms.name().toLowerCase());
+                        if (!cmd.getPermission().needsPermission || canExecute(event, perms)) {
+                            sb.append("**").append(cmd.getName()).append("** - ").append(cmd.getDescription()).append("\r\n");
+                        }
                     }
                 }
+                if (sb.length() > 0) {
+                    e.addField(entry.getKey().name(), sb.toString(), false);
+                    sb.setLength(0);
+                }
             }
-            if (sb.length() > 0) {
-                embed.appendField(entry.getKey().name(), sb.toString(), false);
-                sb.setLength(0);
-            }
-        }
-        RequestBuffer.request(() -> createResponse(event).withEmbed(embed.build()).build());
+        }).block();
     }
 }

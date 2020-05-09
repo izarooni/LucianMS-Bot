@@ -4,14 +4,13 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * @author izarooni
@@ -28,18 +27,22 @@ public class CmdJob extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
             Long var_mapId = args[1].parseUnsignedNumber();
             if (var_mapId == null) {
-                createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid number").build();
+                ch.createMessage(String.format("`%s` is not a valid number.", args[1].toString())).block();
                 return;
             }
             int jobId = var_mapId.intValue();
             if (jobId < 0 || !isJobId(jobId)) {
-                createResponse(event).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid job").build();
+                ch.createMessage(String.format("`%s` is not a valid job.", args[1].toString())).block();
                 return;
             }
             try (Connection con = Discord.getMapleConnection()) {
@@ -52,24 +55,24 @@ public class CmdJob extends BaseCommand {
                                     update.setInt(1, jobId);
                                     update.setString(2, username);
                                     update.executeUpdate();
-                                    createResponse(event).appendContent("Success!").build();
+                                    ch.createMessage("Success!").block();
                                 }
                             } else {
-                                createResponse(event).appendContent("Could not find any player named ").appendContent(username, MessageBuilder.Styles.INLINE_CODE).build();
+                                ch.createMessage(String.format("Could not find any player named `%s`", username)).block();
                             }
                         }
                     }
                 }
-            } catch (SQLException e) {
-                createResponse(event).appendContent("An error occurred!").appendCode("", e.getMessage()).build();
+            } catch (Exception e) {
+                ch.createMessage(String.format("A(n) `%s` exception occurred", e.getClass().getSimpleName())).block();
                 e.printStackTrace();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <job ID>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <ign> <job ID>`");
+            }).block();
         }
     }
 
@@ -78,5 +81,4 @@ public class CmdJob extends BaseCommand {
         int advancement = jobId % 100 % 10;
         return (advancement == 0 || advancement == 1 || advancement == 2) && !(jobId == 2200);
     }
-
 }

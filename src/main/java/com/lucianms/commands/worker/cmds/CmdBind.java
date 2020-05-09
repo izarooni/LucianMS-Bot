@@ -1,13 +1,20 @@
 package com.lucianms.commands.worker.cmds;
 
+import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
+import com.lucianms.server.DGuild;
+import com.lucianms.server.user.DUser;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Entity;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import reactor.core.publisher.Mono;
 
 /**
  * @author izarooni
@@ -24,27 +31,34 @@ public class CmdBind extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        Mono<TextChannel> chm = message.getChannel().ofType(TextChannel.class);
+        DGuild guild = Discord.getGuild(event.getGuild());
+        DUser user = guild.getUser(message.getAuthor().map(User::getId).get().asString());
+
         Command.CommandArg[] args = command.args;
         if (args.length == 1) {
             event.getMessage().delete();
             if (ServerSession.getSession() == null) {
-                event.getChannel().sendMessage("Binding accounts is impossible because the server isn't even online right now!");
+                chm.blockOptional().ifPresent(c -> c.createMessage("Binding accounts not possible because the server is not available."));
                 return;
             }
             String accountUsername = args[0].toString();
             MaplePacketWriter writer = new MaplePacketWriter();
             writer.write(Headers.Bind.value);
-            writer.writeLong(event.getChannel().getLongID());
-            writer.writeLong(event.getAuthor().getLongID());
+            writer.writeLong(message.getChannel().map(Entity::getId).block().asLong());
+            writer.writeLong(user.getId().asLong());
             writer.writeMapleString(accountUsername);
             ServerSession.sendPacket(writer.getPacket());
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <account name>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            chm.blockOptional().ifPresent(c -> {
+                c.createEmbed(e -> {
+                    e.setTitle("How to use the command");
+                    e.addField("description", getDescription(), false);
+                    e.setDescription("\r\n**syntax**: `" + getName() + " <account name>`");
+                }).block();
+            });
         }
     }
 }

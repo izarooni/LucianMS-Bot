@@ -5,9 +5,12 @@ import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.Promise;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import reactor.core.publisher.Mono;
 
 /**
  * @author izarooni
@@ -26,18 +29,23 @@ public class CmdConnect extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        LOGGER.info("Attempting to create connection to server");
-        ServerSession.connect(new Promise() {
-            @Override
-            public void fail() {
-                event.getChannel().sendMessage("Failed to connect to the server");
-            }
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        Mono<TextChannel> chm = message.getChannel().ofType(TextChannel.class);
 
-            @Override
-            public void success() {
-                event.getChannel().sendMessage("Successfully connected to the server");
-            }
+        chm.blockOptional().ifPresent(c -> {
+            Message msg = c.createMessage("Attempting to connect to the server...").block();
+            ServerSession.connect(new Promise() {
+                @Override
+                public void fail() {
+                    msg.edit(m -> m.setContent("Failed to connect to the server")).block();
+                }
+
+                @Override
+                public void success() {
+                    msg.edit(m -> m.setContent("Successfully connected to the server")).block();
+                }
+            });
         });
     }
 }

@@ -19,8 +19,6 @@ public enum CommandUtil {
     Connect      (true,  CommandCategory.Utility,       CommandType.Public, CmdConnect.class),
     GetRoles     (true,  CommandCategory.Utility,       CommandType.Public, CmdGetRoles.class),
     Set          (true,  CommandCategory.Administrator, CommandType.Public, CmdSet.class),
-    News         (true,  CommandCategory.Administrator, CommandType.Public, CmdNews.class),
-    Updates      (true,  CommandCategory.Administrator, CommandType.Public, CmdUpdates.class),
     SafeShutdown (true,  CommandCategory.Administrator, CommandType.Public, CmdSafeShutdown.class),
     Permission   (true,  CommandCategory.Administrator, CommandType.Public, CmdPermission.class),
     Bind         (false, CommandCategory.Game,          CommandType.Both,   CmdBind.class),
@@ -38,15 +36,24 @@ public enum CommandUtil {
     Register     (false, CommandCategory.Game,          CommandType.Private,CmdRegister.class),
     Vote         (false, CommandCategory.General,       CommandType.Public, CmdVote.class);
     //@formatter:on
-    public final boolean requirePermission;
+    public final boolean needsPermission;
     public final CommandCategory category;
     public final CommandType type;
     public final Class<? extends BaseCommand> command;
 
-    CommandUtil(boolean requirePermission, CommandCategory category, CommandType type, Class<? extends BaseCommand> command) {
-        this.requirePermission = requirePermission;
+    CommandUtil(boolean needsPermission, CommandCategory category, CommandType type, Class<? extends BaseCommand> command) {
+        this.needsPermission = needsPermission;
         this.category = category;
         this.type = type;
         this.command = command;
+    }
+
+    public static CommandUtil fromName(String name) {
+        for (CommandUtil v : values()) {
+            if (v.name().equalsIgnoreCase(name) || name.equalsIgnoreCase("*")) {
+                return v;
+            }
+        }
+        return null;
     }
 }

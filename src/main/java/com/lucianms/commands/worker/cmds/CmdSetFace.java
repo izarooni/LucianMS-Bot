@@ -1,15 +1,14 @@
 package com.lucianms.commands.worker.cmds;
 
-import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 /**
  * @author izarooni
@@ -26,29 +25,33 @@ public class CmdSetFace extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         Command.CommandArg[] args = command.args;
         if (args.length == 2) {
             String username = args[0].toString();
             Long var_faceId = args[1].parseUnsignedNumber();
             if (var_faceId == null) {
-                new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel()).appendContent(args[1].toString(), MessageBuilder.Styles.INLINE_CODE).appendContent(" is not a valid ID").build();
+                ch.createEmbed(e -> e.setDescription(String.format("`%s` is not a valid ID", args[1]))).block();
                 return;
             }
             int faceId = var_faceId.intValue();
 
-            MaplePacketWriter writer = new MaplePacketWriter(13 + username.length());
-            writer.write(Headers.SetFace.value);
-            writer.writeLong(event.getChannel().getLongID());
-            writer.writeMapleString(username);
-            writer.writeInt(faceId);
-            ServerSession.sendPacket(writer.getPacket());
+            MaplePacketWriter w = new MaplePacketWriter(13 + username.length());
+            w.write(Headers.SetFace.value);
+            w.writeLong(ch.getId().asLong());
+            w.writeMapleString(username);
+            w.writeInt(faceId);
+            ServerSession.sendPacket(w.getPacket());
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <ign> <face ID>`");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <ign> <face ID>`");
+            }).block();
         }
     }
 }

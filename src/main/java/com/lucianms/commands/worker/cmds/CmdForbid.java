@@ -4,9 +4,10 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import com.lucianms.server.Guild;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
+import com.lucianms.server.DGuild;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 
@@ -22,23 +23,25 @@ public class CmdForbid extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        Guild guild = Discord.getGuilds().computeIfAbsent(event.getGuild().getLongID(), l -> new Guild(event.getGuild()));
-        ArrayList<String> blacklistedWords = guild.getGuildConfig().getWordBlackList();
+    public void invoke(MessageCreateEvent event, Command command) {
+        Mono<MessageChannel> ch = event.getMessage().getChannel();
+        DGuild guild = Discord.getGuild(event.getGuild());
+        ArrayList<String> blacklist = guild.getGuildConfig().getWordBlackList();
 
         if (command.args.length > 0) {
             for (Command.CommandArg arg : command.args) {
-                blacklistedWords.add(arg.toString());
+                blacklist.add(arg.toString());
             }
             guild.getGuildConfig().getWordBlackList().save(guild);
-            createResponse(event).withContent("Word(s) successfully blacklisted!").build();
+            ch.blockOptional().ifPresent(c -> c.createMessage("Word(s) successfully blacklisted.").block());
         } else {
-            StringBuilder sb = new StringBuilder();
-            blacklistedWords.forEach(w -> sb.append(w).append(" "));
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("Every forbidden word for this Discord guild")
-                    .appendDesc(sb.toString());
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.blockOptional().ifPresent(c -> c.createEmbed(e -> {
+                e.setTitle("Forbidden words for this server");
+                StringBuilder sb = new StringBuilder();
+                blacklist.forEach(sb::append);
+                e.setDescription(sb.toString());
+                sb.setLength(0);
+            }).block());
         }
     }
 }

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GuildConfig implements Saveable<Guild> {
+public class GuildConfig implements Saveable<DGuild> {
 
     private static final String TicketCreationKey = "cid_ticket_creation";
     private static final String TicketDestinationKey = "cid_ticket_destination";
@@ -32,13 +32,13 @@ public class GuildConfig implements Saveable<Guild> {
     }
 
     @Override
-    public boolean save(Guild guild) {
+    public boolean save(DGuild DGuild) {
         try (Connection con = Discord.getDiscordConnection()) {
             con.setAutoCommit(false);
-            saveGuildProperty(guild, con, TicketDestinationKey, CIDTicketDestination);
-            saveGuildProperty(guild, con, TicketCreationKey, CIDTicketCreation);
-            saveGuildProperty(guild, con, ApplicationDestinationKey, CIDApplicationDestination);
-            saveGuildProperty(guild, con, ServerVoteURLKey, voteURL);
+            saveGuildProperty(DGuild, con, TicketDestinationKey, CIDTicketDestination);
+            saveGuildProperty(DGuild, con, TicketCreationKey, CIDTicketCreation);
+            saveGuildProperty(DGuild, con, ApplicationDestinationKey, CIDApplicationDestination);
+            saveGuildProperty(DGuild, con, ServerVoteURLKey, voteURL);
             con.setAutoCommit(true);
             return true;
         } catch (SQLException e) {
@@ -47,9 +47,9 @@ public class GuildConfig implements Saveable<Guild> {
         }
     }
 
-    private void saveGuildProperty(Guild guild, Connection con, String propertyKey, String propertyValue) {
+    private void saveGuildProperty(DGuild guild, Connection con, String propertyKey, String propertyValue) {
         try (PreparedStatement ps = con.prepareStatement("insert into configuration values (?, ?, ?) ON duplicate key update property_value = ?")) {
-            ps.setLong(1, guild.getId());
+            ps.setString(1, guild.getId().asString());
             ps.setString(2, propertyKey);
             ps.setString(3, propertyValue);
             ps.setString(4, propertyValue);
@@ -60,10 +60,10 @@ public class GuildConfig implements Saveable<Guild> {
     }
 
     @Override
-    public boolean load(Guild guild) {
+    public boolean load(DGuild guild) {
         try (Connection con = Discord.getDiscordConnection()) {
             try (PreparedStatement ps = con.prepareStatement("select * from configuration where guild_id = ?")) {
-                ps.setLong(1, guild.getId());
+                ps.setString(1, guild.getId().asString());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         String property_key = rs.getString("property_key");

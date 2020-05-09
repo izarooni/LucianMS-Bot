@@ -4,17 +4,24 @@ import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandUtil;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class CmdUnstuck extends BaseCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmdUnstuck.class);
 
     public CmdUnstuck(CommandUtil permission) {
         super(permission);
@@ -26,20 +33,23 @@ public class CmdUnstuck extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
-        IUser author = event.getAuthor();
-        long userID = author.getLongID();
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        Optional<User> author = message.getAuthor();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
         Command.CommandArg[] args = command.getArgs();
+        Snowflake authorID = author.map(User::getId).get();
 
         if (args.length == 1) {
             try (Connection con = Discord.getMapleConnection()) {
                 String username = args[0].toString();
                 int accountID;
                 try (PreparedStatement ps = con.prepareStatement("select id from accounts where discord_id = ?")) {
-                    ps.setLong(1, userID);
+                    ps.setString(1, authorID.asString());
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            event.getChannel().sendMessage(author.mention() + " Have you bound your Discord account to your in-game account?");
+                            ch.createMessage("<@" + authorID.asString() + ">, you have already connected your Discord account.").block();
                             return;
                         } else {
                             accountID = rs.getInt("id");
@@ -51,34 +61,37 @@ public class CmdUnstuck extends BaseCommand {
                     ps.setString(2, username);
                     int updates = ps.executeUpdate();
                     if (updates == 1) {
-                        MessageBuilder response = createResponse(event);
-                        if (!event.getChannel().isPrivate()) {
-                            response.appendContent(author.mention());
+                        StringBuilder sb = new StringBuilder();
+                        if (ch.getType() == Channel.Type.GUILD_TEXT) {
+                            sb.append("<@").append(authorID.asString()).append(">, ");
                         }
-                        response.appendContent(" I have moved your character ")
-                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                .appendContent(" to the home map").build();
+                        sb.append(" Successfully moved ").append("`").append(username).append("`").append(" to the home map.");
+                        ch.createMessage(sb.toString()).block();
+                        sb.setLength(0);
                     } else {
-                        MessageBuilder response = createResponse(event);
-                        if (!event.getChannel().isPrivate()) {
-                            response.appendContent(author.mention());
+                        StringBuilder sb = new StringBuilder();
+                        if (ch.getType() == Channel.Type.GUILD_TEXT) {
+                            sb.append("<@").append(authorID.asString()).append(">, ");
                         }
-                        response.appendContent(" I couldn't find any character named ")
-                                .appendContent(username, MessageBuilder.Styles.INLINE_CODE)
-                                .appendContent(" on your account").build();
+                        sb.append("Unable to find any character named ")
+                                .append("`").append(username).append("`")
+                                .append(" on your account.");
+                        ch.createMessage(sb.toString()).block();
+                        sb.setLength(0);
+
                     }
                 }
-            } catch (SQLException e) {
-                event.getChannel().sendMessage("Oops! Something went wrong...");
-                e.printStackTrace();
+            } catch (SQLException ex) {
+                LOGGER.error("Failed to unstuck", ex);
+                ch.createEmbed(e -> e.setDescription("Oops! Something went wrong...")).block();
             }
         } else {
-            EmbedBuilder embed = createEmbed()
-                    .withTitle("How to use the command")
-                    .appendField("description", getDescription(), false)
-                    .appendDesc("\r\n**syntax**: `").appendDesc(getName()).appendDesc(" <username>`")
-                    .appendDesc("\r\n**username** is the IGN of a character on your account!");
-            createResponse(event).withEmbed(embed.build()).build();
+            ch.createEmbed(e -> {
+                e.setTitle("How to use the command");
+                e.addField("description", getDescription(), false);
+                e.setDescription("\r\n**syntax**: `" + getName() + " <username>`"
+                        + "\r\n**username** is the IGN of a character on your account!");
+            }).block();
         }
     }
 }

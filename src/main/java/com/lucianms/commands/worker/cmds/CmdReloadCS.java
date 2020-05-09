@@ -6,7 +6,9 @@ import com.lucianms.commands.worker.CommandUtil;
 import com.lucianms.net.maple.Headers;
 import com.lucianms.net.maple.ServerSession;
 import com.lucianms.utils.packet.send.MaplePacketWriter;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
 
 /**
  * @author izarooni
@@ -23,13 +25,17 @@ public class CmdReloadCS extends BaseCommand {
     }
 
     @Override
-    public void invoke(MessageReceivedEvent event, Command command) {
+    public void invoke(MessageCreateEvent event, Command command) {
+        Message message = event.getMessage();
+        TextChannel ch = message.getChannel().ofType(TextChannel.class).blockOptional().orElse(null);
+        if (ch == null) return;
+
         if (ServerSession.getSession() == null) {
-            createResponse(event).withContent("I am not connected to the server.").build();
+            ch.createMessage("Unable to contact the server.").block();
         } else {
             MaplePacketWriter writer = new MaplePacketWriter(1);
             writer.write(Headers.ReloadCS.value);
-            writer.writeLong(event.getChannel().getLongID());
+            writer.writeLong(ch.getId().asLong());
             ServerSession.sendPacket(writer.getPacket());
         }
     }

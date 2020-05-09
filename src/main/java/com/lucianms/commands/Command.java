@@ -2,7 +2,9 @@ package com.lucianms.commands;
 
 import com.lucianms.Discord;
 import com.lucianms.commands.worker.CommandExecutor;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 
 /**
  * @author izarooni
@@ -61,12 +63,14 @@ public class Command {
         }
     }
 
-    public static boolean isValidCommand(MessageReceivedEvent event) {
-        return event.getMessage().getAuthor().getLongID() != Discord.getBot().getClient().getOurUser().getLongID() // bot mustn't self-execute
-                && event.getMessage().getContent().startsWith(CommandExecutor.CMD_PREFIX);
+    public static boolean isValidCommand(MessageCreateEvent event) {
+        Snowflake userID = event.getMessage().getAuthor().map(User::getId).get();
+        Snowflake botID = Discord.getBot().getClient().getSelf().map(User::getId).block();
+        return !userID.equals(botID) && event.getMessage().getContent().map(s -> s.startsWith(CommandExecutor.CMD_PREFIX)).orElse(false);
     }
 
     public static Command parse(String text) {
+        if (text == null || text.isEmpty()) return null;
         String[] mSplit = text.split(" "); // original message as splits
         String[] sp = mSplit[0].toLowerCase().split(Discord.getConfig().get("global", "cmd_prefix", String.class));
         if (sp.length > 0) {
@@ -109,7 +113,6 @@ public class Command {
      * Compare the command name with a string
      *
      * @param message a message to compare to the command name
-     *
      * @return true if the specified message equals (non case-sensitive) the command name
      */
     public boolean equals(String message) {
@@ -120,7 +123,6 @@ public class Command {
      * Compare the command name with several messages
      *
      * @param message messages to compare to the command name
-     *
      * @return true if any of the specified messages match with the command name
      */
     public boolean equals(String... message) {

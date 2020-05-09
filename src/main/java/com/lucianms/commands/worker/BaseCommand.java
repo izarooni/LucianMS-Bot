@@ -3,14 +3,17 @@ package com.lucianms.commands.worker;
 import com.lucianms.Discord;
 import com.lucianms.commands.Command;
 import com.lucianms.commands.CommandType;
-import com.lucianms.server.Guild;
-import com.lucianms.server.user.User;
+import com.lucianms.server.DGuild;
+import com.lucianms.server.user.DUser;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.*;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
+import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 /**
  * @author izarooni
@@ -43,32 +46,37 @@ public abstract class BaseCommand {
      *
      * @return true if the command can be executed by the command user, false otherwise
      */
-    public boolean canExecute(MessageReceivedEvent event, CommandUtil permission) {
-        IChannel ch = event.getChannel();
-
-        if (ch.isPrivate()) {
-            return !permission.requirePermission
-                    && (permission.type == CommandType.Private || permission.type == CommandType.Both);
+    public boolean canExecute(MessageCreateEvent event, CommandUtil cmd) {
+        Message message = event.getMessage();
+        Optional<User> author = message.getAuthor();
+        Mono<MessageChannel> channel = message.getChannel();
+        if (!author.isPresent()) {
+            return false;
         }
 
-        IGuild ig = ch.getGuild();
-        IUser iu = event.getAuthor();
+        boolean isAdmin = channel.ofType(GuildChannel.class)
+                .flatMap(c -> c.getEffectivePermissions(author.map(User::getId).get()))
+                .map(set -> set.containsAll(PermissionSet.of(Permission.ADMINISTRATOR))).blockOptional().orElse(null);
 
-        if (iu.getStringID().equals(Discord.getConfig().get("global", "owner_id", String.class))) {
+        // is the message being created in a PrivateChannel
+        if (channel.ofType(PrivateChannel.class).blockOptional().isPresent()) {
+            // only allow if the command can be used privately and user is authorized
+            return (!cmd.needsPermission || isAdmin) && (cmd.type == CommandType.Private || cmd.type == CommandType.Both);
+        }
+        DGuild guild = event.getGuild().map(g -> Discord.getGuilds().get(g.getId().asString())).block();
+        String authorID = author.map(User::getId).get().asString();
+        DUser user = guild.getUser(authorID);
+
+        // if the user is the owner of the bot (as defined in the configration file)
+        if (authorID.equals(Discord.getConfig().get("global", "owner_id", String.class))) {
             return true;
         }
 
-        Guild guild = Discord.getGuilds().get(ig.getLongID());
-        User user = guild.addUserIfAbsent(event.getAuthor());
-        String permissionName = permission.name().toLowerCase();
-
-        for (IRole role : event.getAuthor().getRolesForGuild(ig)) {
-            if (role.getPermissions().contains(Permissions.ADMINISTRATOR)
-                    || guild.getPermissions().contains(role.getLongID(), permissionName)) {
-                return true;
-            }
-        }
-        return user.getPermissions().contains(ig.getLongID(), permissionName);
+        return event.getGuild()
+                .map(g -> g.getRoles())
+                .flatMap(r -> r.collectList())
+                .map(c -> c.stream().anyMatch(r -> user.getPermissions().contains(r.getId().asString(), cmd)))
+                .blockOptional().orElse(false);
     }
 
     /**
@@ -77,22 +85,5 @@ public abstract class BaseCommand {
      * @param event   discord message received event
      * @param command a command object containing the event object, command name and command arguments
      */
-    public abstract void invoke(MessageReceivedEvent event, Command command);
-
-    public final MessageBuilder createResponse(MessageReceivedEvent event) {
-        return new MessageBuilder(Discord.getBot().getClient()).withChannel(event.getChannel());
-    }
-
-    public final EmbedBuilder createEmbed() {
-        return new EmbedBuilder().withColor(26, 188, 156);
-    }
-
-    public final EmbedBuilder createEmbed(IEmbed bed) {
-        EmbedBuilder embed = new EmbedBuilder().withColor(bed.getColor());
-        if (bed.getTitle() != null) embed.withTitle(bed.getTitle());
-        if (bed.getDescription() != null) embed.withTitle(bed.getDescription());
-        if (bed.getFooter() != null) embed.withTitle(bed.getFooter().getText());
-        if (bed.getEmbedFields() != null) bed.getEmbedFields().forEach(embed::appendField);
-        return embed;
-    }
+    public abstract void invoke(MessageCreateEvent event, Command command);
 }

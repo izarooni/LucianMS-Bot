@@ -36,8 +36,9 @@ public class MaplePacketWriter extends LittleEndianWriter {
         writeShort(loc.getY());
     }
 
-    public void writeBoolean(boolean b) {
+    public boolean writeBoolean(boolean b) {
         baos.write(b ? 1 : 0);
+        return b;
     }
 
     public byte[] getPacket() {
