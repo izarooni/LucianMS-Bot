@@ -7,9 +7,7 @@ import com.lucianms.commands.worker.BaseCommand;
 import com.lucianms.commands.worker.CommandExecutor;
 import com.lucianms.commands.worker.CommandUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
-import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.*;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -27,7 +25,9 @@ public class CmdHelp extends BaseCommand {
     public CmdHelp(CommandUtil permission) {
         super(permission);
         for (CommandUtil perm : CommandUtil.values()) {
-            COMMANDS.computeIfAbsent(perm.category, cat -> new ArrayList<>()).add(perm);
+            if (perm.command != null) {
+                COMMANDS.computeIfAbsent(perm.category, cat -> new ArrayList<>()).add(perm);
+            }
         }
     }
 
@@ -38,12 +38,12 @@ public class CmdHelp extends BaseCommand {
 
     @Override
     public void invoke(MessageCreateEvent event, Command command) {
-        Mono<MessageChannel> chm = event.getMessage().getChannel();
-        Optional<User> author = event.getMessage().getAuthor();
-        MessageChannel ch = chm.blockOptional().orElse(null);
+        TextChannel ch = event.getMessage()
+                .getChannel().ofType(TextChannel.class)
+                .blockOptional().orElse(null);
         if (ch == null) return;
 
-        boolean isPrivate = chm.ofType(PrivateChannel.class).blockOptional().isPresent();
+        boolean isPrivate = ch.getType() == Channel.Type.DM;
 
         ch.createEmbed(e -> {
             e.setTitle("Available commands");

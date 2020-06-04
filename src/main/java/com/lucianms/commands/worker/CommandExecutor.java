@@ -53,7 +53,12 @@ public class CommandExecutor {
             if (cmdType.isChannelApplicable(ch)) {
                 if (ch.getType() == Channel.Type.GUILD_TEXT) { // is a public discord channel
                     if (!base.getPermission().needsPermission || base.canExecute(event, base.getPermission())) {
-                        base.invoke(event, command);
+                        try {
+                            base.invoke(event, command);
+                        } catch (Exception e) {
+                            LOGGER.error("Failed to invoke command '{}'", command.getCommand(), e);
+                            ch.createMessage("Error occurred within the command.").block();
+                        }
                     } else {
                         ch.createMessage("You don't have permission to use this command.").block();
                     }
