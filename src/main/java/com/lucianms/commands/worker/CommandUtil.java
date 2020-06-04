@@ -11,7 +11,7 @@ public enum CommandUtil {
 
     //@formatter:off
     Help         (false, CommandCategory.General,       CommandType.Both,   CmdHelp.class),
-    Apply        (false, CommandCategory.General,       CommandType.Public, CmdApply.class),
+    Apply        (false, CommandCategory.General,       CommandType.Public, null),
     Ticket       (false, CommandCategory.General,       CommandType.Public, CmdTicket.class),
     Embed        (true,  CommandCategory.Utility,       CommandType.Public, CmdEmbed.class),
     Forbid       (true,  CommandCategory.Utility,       CommandType.Public, CmdForbid.class),
@@ -19,11 +19,11 @@ public enum CommandUtil {
     Connect      (true,  CommandCategory.Utility,       CommandType.Public, CmdConnect.class),
     GetRoles     (true,  CommandCategory.Utility,       CommandType.Public, CmdGetRoles.class),
     Set          (true,  CommandCategory.Administrator, CommandType.Public, CmdSet.class),
-    SafeShutdown (true,  CommandCategory.Administrator, CommandType.Public, CmdSafeShutdown.class),
+    SafeShutdown (true,  CommandCategory.Administrator, CommandType.Public, null),
     Permission   (true,  CommandCategory.Administrator, CommandType.Public, CmdPermission.class),
-    Bind         (false, CommandCategory.Game,          CommandType.Both,   CmdBind.class),
+    Bind         (false, CommandCategory.Game,          CommandType.Both,   null),
     Online       (false, CommandCategory.Game,          CommandType.Both,   CmdOnline.class),
-    Unstuck      (false, CommandCategory.Game,          CommandType.Both,   CmdUnstuck.class),
+    Unstuck      (false, CommandCategory.Game,          CommandType.Both,   null),
     Job          (true,  CommandCategory.Game,          CommandType.Public, CmdJob.class),
     Warp         (true,  CommandCategory.Game,          CommandType.Public, CmdWarp.class),
     Strip        (true,  CommandCategory.Game,          CommandType.Public, CmdStrip.class),
@@ -33,7 +33,7 @@ public enum CommandUtil {
     Reserve      (true,  CommandCategory.Game,          CommandType.Public, CmdReserve.class),
     ReloadCS     (true,  CommandCategory.Game,          CommandType.Public, CmdReloadCS.class),
     Disconnect   (true,  CommandCategory.Game,          CommandType.Both,   CmdDisconnect.class),
-    Register     (false, CommandCategory.Game,          CommandType.Private,CmdRegister.class),
+    Register     (false, CommandCategory.Game,          CommandType.Private, null),
     Vote         (false, CommandCategory.General,       CommandType.Public, CmdVote.class);
     //@formatter:on
     public final boolean needsPermission;

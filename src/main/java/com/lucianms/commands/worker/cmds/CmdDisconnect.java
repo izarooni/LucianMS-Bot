@@ -26,7 +26,7 @@ public class CmdDisconnect extends BaseCommand {
 
     @Override
     public String getDescription() {
-        return "Disconnect a specified player from LucianMS in-game";
+        return "Disconnect a specified player from in-game";
     }
 
     @Override

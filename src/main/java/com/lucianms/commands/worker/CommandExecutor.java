@@ -8,6 +8,7 @@ import discord4j.core.object.entity.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 /**
@@ -23,8 +24,11 @@ public class CommandExecutor {
     static {
         for (CommandUtil cmd : CommandUtil.values()) {
             try {
-                BaseCommand baseCommand = cmd.command.getConstructor(cmd.getClass()).newInstance(cmd);
-                COMMANDS.put(cmd.name().toLowerCase(), baseCommand);
+                Constructor<? extends BaseCommand> constructor = cmd.command.getConstructor(cmd.getClass());
+                if (constructor != null) {
+                    BaseCommand baseCommand = constructor.newInstance(cmd);
+                    COMMANDS.put(cmd.name().toLowerCase(), baseCommand);
+                }
             } catch (Exception e) {
                 LOGGER.error("Failed to instantiate command {}", cmd, e);
             }

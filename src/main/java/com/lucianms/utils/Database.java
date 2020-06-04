@@ -11,7 +11,7 @@ public class Database {
         HikariConfig config = new HikariConfig();
         config.setPoolName(schema);
         config.setSchema(schema);
-        config.setJdbcUrl(String.format("jdbc:mysql://%s:3306/%s", properties.get("host_address"), schema));
+        config.setJdbcUrl(String.format("jdbc:mysql://%s:3306/%s?serverTimezone=UTC", properties.get("host_address"), schema));
         config.setUsername(properties.get("username"));
         config.setPassword(properties.get("password"));
         config.setLeakDetectionThreshold(90000);
