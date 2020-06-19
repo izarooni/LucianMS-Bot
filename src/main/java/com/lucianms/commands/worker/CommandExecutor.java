@@ -24,8 +24,9 @@ public class CommandExecutor {
     static {
         for (CommandUtil cmd : CommandUtil.values()) {
             try {
-                Constructor<? extends BaseCommand> constructor = cmd.command.getConstructor(cmd.getClass());
-                if (constructor != null) {
+                Class<? extends BaseCommand> clazz = cmd.command;
+                if (clazz != null) {
+                    Constructor<? extends BaseCommand> constructor = clazz.getConstructor(cmd.getClass());
                     BaseCommand baseCommand = constructor.newInstance(cmd);
                     COMMANDS.put(cmd.name().toLowerCase(), baseCommand);
                 }

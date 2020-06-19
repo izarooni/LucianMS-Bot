@@ -25,6 +25,11 @@ public class SessionHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        ServerSession.connect(null);
+    }
+
+    @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Channel context registered to inter server");
         ServerSession.setSession(ctx.channel());
