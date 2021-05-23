@@ -40,8 +40,12 @@ public class ServerSession {
                         promise.success();
                     }
                 } else {
-                    LOGGER.info("Attempting to reconnect server in 10 seconds");
-                    future.channel().eventLoop().schedule(() -> connect(null), 10, TimeUnit.SECONDS);
+                    if (promise == null) {
+                        LOGGER.info("Attempting to reconnect server in 10 seconds");
+                        future.channel().eventLoop().schedule(() -> connect(null), 10, TimeUnit.SECONDS);
+                    } else {
+                        promise.fail();
+                    }
                 }
             }
         });

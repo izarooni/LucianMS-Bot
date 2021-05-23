@@ -104,6 +104,7 @@ public class Discord {
         mapleDataSource = Database.createDataSource(databaseSection, databaseSection.get("maple_schema"));
         discordDataSource = Database.createDataSource(databaseSection, databaseSection.get("discord_schema"));
         Flyway flyway = Flyway.configure().dataSource(discordDataSource).schemas(discordDataSource.getSchema()).load();
+        flyway.setBaselineOnMigrate(true);
         flyway.repair();
         flyway.migrate();
 
